@@ -170,7 +170,7 @@ git log -n 1 tags/<assignment tag>
    * run `make sim_tx_115200_even`
 7. Check to see if there are any files that are generated during the build process but not ignored. I will run the following command:
 `git ls-files . --exclude-standard --others`. <br>If there are any files not ignored after running the above make commands then you will lose points.
-7. Review the number of commits and the commit messages to your assignment directory: `git log --pretty=format:"%ad %s" --date=short --`. You will need to demonstrate that you have made several error commits as part of your history.
+7. Review the number of commits and the commit messages to your assignment directory: `git log --pretty=format:"%ad %s" --date=short --`. You will need to demonstrate that you have made several error commits as part of your history. `git log --pretty=format:"%ad %s" --date=format:"%m%d%y/%H:%M"`
 8. run `make clean`
 I will clean the directory where I ran your commands to make sure the clean works properly. 
 I will check to see if your `make clean` cleaned all the ignore files: `git check-ignore *` <br>
