@@ -43,7 +43,7 @@ class repo_test():
         Args:
             proc_cmd -- The string command to be executed.
             proc_wd -- The directory in which the command should be executed. Note that the execution directory
-                can be anywhere and not necessarily within the repository. If this is None, the self.working_dir
+                can be anywhere and not necessarily within the repository. If this is None, the self.working_path
                 will be used.
             print_to_stdout -- If True, the output of the command will be printed to stdout.
             print_message -- If True, messages will be printed to stdout about the command being executed.
@@ -62,14 +62,14 @@ class repo_test():
                 self.rts.print_error("Error opening file for writing:", process_output_filepath)
                 return -1
             self.rts.print("Writing output to:", process_output_filepath)
-        message = "Executing the following command in directory:"+str(self.repo.working_dir)
+        message = "Executing the following command in directory:"+str(self.repo.working_path)
         self.rts.print(message)
         if fp:
             fp.write(message+"\n")
         # Execute command		
         proc = subprocess.Popen(
             proc_cmd,
-            cwd=self.repo.working_dir,
+            cwd=self.repo.working_path,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
@@ -97,7 +97,7 @@ class file_exists_test(repo_test):
         return "File Check"
 
     def perform_test(self):
-        file_path = self.repo.working_dir + '/' + self.repo_file_path
+        file_path = self.repo.working_path + '/' + self.repo_file_path
         if not os.path.exists(file_path):
             self.rts.print_error(f'File does not exist: {file_path}')
             return False

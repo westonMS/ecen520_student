@@ -7,6 +7,7 @@ import subprocess
 import sys
 import re
 import os
+import git
 
 
 class repo_test_suite():
@@ -35,9 +36,11 @@ class repo_test_suite():
 
     '''
 
-    def __init__(self, repo, working_dir, print_to_stdout = True, verbose = False, summary_log_filename = None, log_dir = None, ):
+    def __init__(self, repo, working_dir = None, print_to_stdout = True, verbose = False, summary_log_filename = None, log_dir = None, ):
         self.repo = repo
-        self.working_dir = working_dir
+        self.working_path = pathlib.Path(working_dir)
+        if working_dir is None:
+            self.working_path = pathlib.Path(__file__)
         self.log_dir = log_dir
         self.tests_to_perform = [] # list of test_module objects
         self.print_to_stdout = print_to_stdout
@@ -66,4 +69,11 @@ class repo_test_suite():
         # Print to std_out?
         print("Error" + message)
 
+    def create_from_path(path = None):
+        ''' Create a repo_test_suite object from a path. If no path is given,
+        the current directory is used. '''
+        if path is None:
+            path = os.getcwd()
+        repo = git.Repo(path, search_parent_directories=True)
+        return repo_test_suite(repo, path)
 
