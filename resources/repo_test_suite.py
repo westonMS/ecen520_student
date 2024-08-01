@@ -38,13 +38,15 @@ class repo_test_suite():
 
     def __init__(self, repo, working_dir = None, print_to_stdout = True, verbose = False, summary_log_filename = None, log_dir = None, ):
         self.repo = repo
+        self.script_path = os.getcwd()
         self.working_path = pathlib.Path(working_dir)
         if working_dir is None:
-            self.working_path = pathlib.Path(__file__)
+            self.working_path = self.script_path
         self.log_dir = log_dir
         self.tests_to_perform = [] # list of test_module objects
         self.print_to_stdout = print_to_stdout
         self.verbose = verbose
+        self.test_log_fp = None
         if summary_log_filename:
             summary_log_filepath = self.log_dir + '/' + summary_log_filename
             self.test_log_fp = open(summary_log_filepath, "w")
@@ -67,13 +69,39 @@ class repo_test_suite():
     def print_error(self, message):
         """ Prints a string to the appropriate locations. """
         # Print to std_out?
-        print("Error" + message)
+        print(message)
 
-    def create_from_path(path = None):
-        ''' Create a repo_test_suite object from a path. If no path is given,
-        the current directory is used. '''
-        if path is None:
-            path = os.getcwd()
-        repo = git.Repo(path, search_parent_directories=True)
-        return repo_test_suite(repo, path)
+    def run_tests(self):
+        ''' Run all the registered tests '''
+        for test in self.tests_to_perform:
+            #self.print_step_message(test.module_name())
+            self.execute_test_module(test)
+        # Wrap up
+        #self.print_message_summary()
+        #self.clean_up_test()
+
+    def execute_test_module(self, test_module):
+        ''' Executes the 'perform_test' function of the tester_module and logs its result in the log file '''
+
+        # Check to see if the test should proceed
+        # if not self.proceed_with_tests:
+        #     print("Skipping test",test_module.module_name(),"due to previous errors")
+        #     return False
+
+        module_name = test_module.module_name()
+        result = test_module.perform_test()
+        if result:
+            self.print(str.format("Success:{}\n",module_name))
+        else:
+            self.print_error(str.format("Failed:{}\n",module_name))
+        return result
+
+# Static methods
+def create_from_path(path = None):
+    ''' Create a repo_test_suite object from a path. If no path is given,
+    the current directory is used. '''
+    if path is None:
+        path = os.getcwd()
+    repo = git.Repo(path, search_parent_directories=True)
+    return repo_test_suite(repo, path)
 

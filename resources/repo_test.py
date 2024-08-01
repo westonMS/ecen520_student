@@ -53,7 +53,7 @@ class repo_test():
         """
         
         fp = None
-        if self.repo_test_suite.log_dir is not None and process_output_filename is not None:
+        if self.rts.log_dir is not None and process_output_filename is not None:
             if not os.path.exists(self.repo_test_suite.log_dir):
                 os.makedirs(self.repo_test_suite.log_dir)
             process_output_filepath = self.log_dir + '/' + process_output_filename
@@ -62,20 +62,21 @@ class repo_test():
                 self.rts.print_error("Error opening file for writing:", process_output_filepath)
                 return -1
             self.rts.print("Writing output to:", process_output_filepath)
-        message = "Executing the following command in directory:"+str(self.repo.working_path)
+        cmd_str = " ".join(proc_cmd)
+        message = "Executing the following command in directory:"+str(self.rts.working_path)+":"+str(cmd_str)
         self.rts.print(message)
         if fp:
             fp.write(message+"\n")
         # Execute command		
         proc = subprocess.Popen(
             proc_cmd,
-            cwd=self.repo.working_path,
+            cwd=self.rts.working_path,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
         )
         for line in proc.stdout:
-            if self.print_to_stdout:
+            if self.rts.print_to_stdout:
                 sys.stdout.write(line)
             if fp:
                 fp.write(line)
@@ -97,7 +98,7 @@ class file_exists_test(repo_test):
         return "File Check"
 
     def perform_test(self):
-        file_path = self.repo.working_path + '/' + self.repo_file_path
+        file_path = self.rts.working_path / self.repo_file_path
         if not os.path.exists(file_path):
             self.rts.print_error(f'File does not exist: {file_path}')
             return False
@@ -120,8 +121,11 @@ class make_test(repo_test):
         return "Makefile"
 
     def perform_test(self):
-        cmd = f'make {self.make_rule}'
-        return self.execute_command(cmd)
+        cmd = ["make", self.make_rule]
+        return_val = self.execute_command(cmd)
+        if return_val != 0:
+            return False
+        return True
 
 class check_for_untracked_files(repo_test):
     ''' 
@@ -135,7 +139,7 @@ class check_for_untracked_files(repo_test):
         return "Check for untracked GIT files"
 
     def perform_test(self):
-        untracked_files = self.repo.git.ls_files("--others", "--exclude-standard")
+        untracked_files = self.rts.repo.git.ls_files("--others", "--exclude-standard")
         if untracked_files:
             self.rts.print_error(f'Untracked files found in repository:')
             files = untracked_files.splitlines()
@@ -167,24 +171,28 @@ class check_for_uncommitted_files(repo_test):
 
 class list_git_commits(repo_test):
 
-    def __init__(self, repo_test_suite, repo_path):
+    def __init__(self, repo_test_suite, repo_path = None):
         '''  '''
         super().__init__(repo_test_suite)
-        self.repo_path = repo_path
+        if repo_path is None:
+            self.repo_path = self.rts.script_path
+        else:
+            self.repo_path = repo_path
 
     def module_name(self):
         return "List Git Commits"
 
     def perform_test(self):
-        commits = self.repo.git.log("--pretty=format:%h %ad \"%s\"", "--date=format:%m%d%y_%H:%M")
+        commits = self.rts.repo.git.log("--pretty=format:%h %ad \"%s\"", "--date=format:%m%d%y_%H:%M")
         commits = commits.splitlines()
         if commits:
-            self.rts.print(f'{len(commits)} Commits found in repository:')
+            self.rts.print(f'{len(commits)} Commits found in {self.repo_path}:')
             for commit in commits:
                 # e387b37 073124/17:36 "Updated requriements"
                 commit_re = re.compile(r'(\w+)\s+(\d+)\s+\"(.*)\"')
                 match = commit_re.match(commit)
                 self.rts.print(f'  {commit}')
+                # TODO: print all the files changed in the commit (option?)
                 if match:
                     hash = match.group(1)
                     date = match.group(2)
