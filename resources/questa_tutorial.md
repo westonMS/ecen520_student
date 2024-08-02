@@ -36,15 +36,43 @@ You are encouraged to access the help documentation within QuestaSim to get more
 3. Start simulation: `vsim -c work.counter_tb -voptargs=+acc`
 4. Run the simulation to the end: `run -all`
 
+
+## QuestaSim Waveform Helps
+
+Waveform editing quick key commands:
+* `F`: Full waveform zoom
+* `I`: Zoom in
+* `O`: Zoom Out
+
+You can create a `.do` file that helps setup your waveforms when you run vsim.
+This file can include dividers and waveforms before you start:
+
+
+```
+add wave -divider "Top"
+add wave -position insertpoint  \
+    sim:/tx_top_tb/tx_top/CLK100MHZ \
+    sim:/tx_top_tb/tx_top/BTNC
+add wave -divider "tx"
+add wave -position insertpoint  \
+    sim:/tx_top_tb/tx_top/tx_data \
+    sim:/tx_top_tb/tx_top/tx_out \
+    sim:/tx_top_tb/tx_top/tx_out_d
+add wave -divider "debouncer"
+add wave -position insertpoint  \
+    sim:/tx_top_tb/tx_top/db/debounce_out \
+    sim:/tx_top_tb/tx_top/db/debounce_counter
+```
+
 ## QuestaSim Commands
 
-## vlog
+### vlog
 
-## vlog
+### vlog
 
-## vcom
+### vcom
 
-## vlib
+### vlib
 
 <!--
 Ideas:
