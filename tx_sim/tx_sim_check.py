@@ -18,10 +18,9 @@ def main():
     ''' Main executable for script
     '''
     checker = repo_test_suite.create_from_path()
-    #repo_test.file_exists_test(checker,"makefile")
     repo_test.list_git_commits(checker)
-    #repo_test.make_test(checker,"sim_tx")
-    #repo_test.make_test(checker,"sim_tx_115200_even")
+    repo_test.make_test(checker,"sim_tx")
+    repo_test.make_test(checker,"sim_tx_115200_even")
     repo_test.check_for_untracked_files(checker)
     repo_test.make_test(checker,"clean")
     #repo_test.check_for_untracked_files(checker, False)
