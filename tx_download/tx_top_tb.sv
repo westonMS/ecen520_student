@@ -18,11 +18,14 @@ module top_tb ();
     int bounce_delay_clocks, bounces;
     //int NUMBER_OF_CHARS = 2;
 
-    parameter time BOUNCE_TIME = 1ms;
-    parameter time CLOCK_PERIOD = 10ns;
-    parameter int BOUNCE_CLOCKS = BOUNCE_TIME / CLOCK_PERIOD;
-    parameter int BOUNCE_CLOCKS_LOW_RANGE = 1000;
-    parameter int BOUNCE_CLOCKS_HIGH_RANGE = 10000;
+    parameter int DEBOUNCE_DELAY_US = 1000; // 1 ms
+    //parameter time BOUNCE_TIME = 1ms;
+    parameter time CLOCK_FREQUENCY = 100_000_000;
+    /parameter time CLOCK_PERIOD = 10ns;
+    //parameter int BOUNCE_CLOCKS = BOUNCE_TIME / CLOCK_PERIOD;
+    parameter int BOUNCE_CLOCKS = (DEBOUNCE_DELAY_US * CLOCK_FREQUENCY) / 1_000_000;
+    parameter int BOUNCE_CLOCKS_LOW_RANGE = BOUNCE_CLOCKS / 100 + 1;
+    parameter int BOUNCE_CLOCKS_HIGH_RANGE = BOUNCE_CLOCKS / 4;
     parameter int NUM_BOUNCES_LOW_RANGE = 2;
     parameter int NUM_BOUNCES_HIGH_RANGE = 5;
     parameter int NUMBER_OF_CHARS = 3;
@@ -60,7 +63,7 @@ module top_tb ();
     assign led_sw = led_i[7:0];
 
     // Task for generating a bouncy signal
-    task bounce_btnc( input end_result);
+    task bounce_btnc(input end_result);
         //$display("[%0tns] Starting bouncy btnc", $time/1000.0);
         bounces = $urandom_range(NUM_BOUNCES_LOW_RANGE,NUM_BOUNCES_HIGH_RANGE);
         for(int i = 0; i < bounces; i++) begin
@@ -168,7 +171,7 @@ module top_tb ();
                 @(negedge clk);
         end
 
-        $finish;
+        $done;
     end
 
 endmodule

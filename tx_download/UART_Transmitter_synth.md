@@ -9,21 +9,38 @@
 
 For this assignment you will create a top-level design for your UART transmitter, synthesize the transmitter, and download it to the FPGA board.
 
-## Assignment Instructions
-
-Assignment reminders:
+**Assignment reminders:**
 * As with the previous assignment, you must place your assignment code within a specific assignment directory as described in the [assignments overview](../Readme.md) page.
 Make sure your add this directory to your repository and place all assignment specific code in this directory.
 * You will also need to tag your repository when you are ready to submit.
 * You are required to make frequent commits when you have design failures as described [here](../resources/assignment_mechanics.md#github-commits)
 
-### Debouncer and One-Shot Detector
+## Top-Level Transmitter Design
 
-**HERE**
+There are several steps needed to create a working UART transmitter design from your transmitter module from the last assignment.
+You will need to create a top-level design that includes your transmitter module, a debouncer, and a one-shot detector.
+You will need to create an xdc file that maps the pins of the FPGA to the ports of your design and you will need to run your full design files and xdc file through the Xilinx synthesis tools. 
+The instructions below will guide you through these steps.
+
+
+### Debouncer and One Shot Circuit
+
+Before creating the top-level design, create a debouncer circuit to debounce the buttons on the FPGA board.
+A debouncer is needed to prevent a single press of the button from being interpreted as multiple presses and thus causing multiple characters to be transmitted over the UART.
+The idea behind the debouncer is to make sure that the button signal is stable for a minimum amount of time before actually accepting the signal as valid (i.e., ignore short pulses).
+There is a [lab description](https://byu-cpe.github.io/ecen320/labs/lab-08/) of a debouncer that you can use as a reference.
+Your debouncer will need to have a parameter that specifies the minimum debounce delay in microseconds. 
+This way you can simulate your debouncer with relatively short debounce times but synthesize your debouncer with a longer debounce time.
+You will be using the debouncer module in several assignments during the semester.
+
+In addition to the debouncer, you need to create a "one shot" circuit that will generate a single pulse output when the button is pressed.
+The purpose of the one-shot circuit is to generate a single pulse when the button is pressed and to ignore any additional presses until the pulse has completed.
+If you do not add a one-shot circuit then the button press will be interpreted as multiple presses and multiple characters will be transmitted over the UART.
+The output of the debouncer plus one-shot circuits will go into the `send` input of your transmitter module.
 
 ### Create a top-level FPGA design
 
-The first step in this assignment is to create a top-level design that instances your transmitter and hooks it up to the I/O pins of the FPGA board.
+Create a top-level design that instances your transmitter and hooks it up to the I/O pins of the FPGA board.
 For this assignment and throughout the class we will be using the [Nexys 4 DDR](https://reference.digilentinc.com/programmable-logic/nexys-4-ddr/start) board and the top-level ports will correspond to the port names on this board.
 Create a top-level module named `tx_top.sv` with the following ports and parameters (the port names are derived from the nexys4 DDR XDC file):
 
@@ -49,23 +66,23 @@ Create your top-level design as follows:
   * Attach the `tx_busy` signal from your transmitter to the LED16_B signal. This is the "blue" color for tri-color LED 16 on the board (it should flash blue when the transmitter is busy)
   * Hook up the center button (BTNC) to your circuit so that when the button is pressed one character will be transmitted. You will need a debouncer and one-shot circuit to accomplish this. You will need to implement a simple state machine or handshaking protocol to make sure that only one character is sent for each button press.
   * Attach the CPU reset so that when pressed, the system will be reset (note that the input reset polarity is negative asserted). Add two synchronizing flip-flops between the reset button and your internal reset signal to synchronize the reset signal to the global clock.
-  * Add a flip-flop for your TX output signal. This flip-flop will make sure that the output signal does not glitch. 
+  * Add a flip-flop on the TX output of your transmitter module and send the output to the top-level TX output. This flip-flop will make sure that the output signal does not glitch. 
 
 A top-level testbench, [top_tb.sv](./top_tb.sv), has been created for you to test your top-level design.
-This testbench also uses the [rx_model.sv](./rx_model.sv) simulation model from the previous assignment.
+This testbench also uses the [rx_model.sv](../tx_sim/rx_model.sv) simulation model from the previous assignment.
 Make sure your top-level design successfully passes this testbench.
 Add a makefile rule named `sim_top` that will perform this simulation from the command line using the default parameters.
 In addition, make a second makefile rule named `sim_top_115200_even` that performs this simulation with the parameters changed as follows: baud rate = 115200 and even parity.
 Do not proceed to the next step until you have successfully simulated your top-level design for both baud rates and parities.
 
-### Design Implementation
+## Design Implementation
 
 After verifying your design, the next step in this assignment is to synthesize your design and download it to the FPGA board.
 If your design is properly verified and written in a way that synthesizes without any problems then this step can be relatively easy.
 For this class we will be using the command line tools in non-project mode for the synthesis and implementation.
 This is unlike previous classes where you might have used the Vivado GUI and used Vivado projects to manage your implementation flow.
 
-#### XDC Constraints File
+### XDC Constraints File
 
 The first step in this process is to create a top-level `.xdc` file that maps the top-level pins of your circuit to the appropriate FPGA pin on this board.
 The easiest way to do this is to start with the master [`.xdc`](../resources/Nexys-4-DDR-Master.xdc) file for the Nexys 4 DDR board and uncomment the appropriate pins used by your design.
@@ -82,7 +99,7 @@ Make sure you commit your `.xdc` file to your repository.
 The following [xdc tutorial](https://byu-cpe.github.io/ecen320/tutorials/lab_03/05_making_an_xdc_file/) can help you complete an xdc file and add the xdc file to your project.
 -->
 
-#### Design Synthesis
+### Design Synthesis
 
 The next step in the implementation process is to synthesize your design with the Xilinx Vivado synthesis tool.
 Although you are welcome to run the synthesis tool in the GUI mode, you will need to run the tool in command line mode for submission of this assignment.
@@ -145,7 +162,7 @@ Synthesize your design and create a bit file [see the tutorials for synthesis](h
 [bitgen](https://byu-cpe.github.io/ecen320/tutorials/lab_03/09_bitgen/).
 -->
 
-#### Implementation and Bitstream generation
+### Implementation and Bitstream generation
 
 After generating a successful synthesis, the next step is to complete the implementation process.
 This involves optimizing your design, placing your design into specific sites within the FPGA, performing routing, and generating a configuration bitstream.
@@ -160,7 +177,7 @@ write_bitstream -force tx.bit
 The final step requires an argument with the filename of the bitstream you want to generate.
 Like the synthesis step, there may be errors in this process that will require you to go back and make changes to your HDL code.
 
-#### Implementation Checkpoint and Logs
+### Implementation Checkpoint and Logs
 
 The state of your implemented design is held within the Vivado tool and this state is lost if you quit the tool.
 It is often important to save the state of your implemented design so you can return to it later.
@@ -190,7 +207,7 @@ report_drc -file drc_routed.rpt
 ```
 
 
-#### Build Script
+### Build Script
 
 It is tedious to type all of these implementation commands in by hand every time you want to implement.
 You can create a `.tcl` script that contains all of these commands and run this script to implement your design.
@@ -202,7 +219,7 @@ You can run your implementation script as a single command from the command line
 
 
 
-### Design Download
+## Design Download
 
 After successfully synthesizing your design and generating a bitfile, download your design to a Nexys4 DDR board and demonstrate it working correctly. 
 Use the "Putty" tool to send characters from your board to the computer. 
