@@ -3,7 +3,7 @@
 // TX top-level testbench
 //////////////////////////////////////////////////////////////////////////////////
 
-module top_tb ();
+module tx_top_tb ();
 
     logic clk, rst_n, rst, btnc;
     logic [7:0] sw;
@@ -21,7 +21,7 @@ module top_tb ();
     parameter int DEBOUNCE_DELAY_US = 1000; // 1 ms
     //parameter time BOUNCE_TIME = 1ms;
     parameter time CLOCK_FREQUENCY = 100_000_000;
-    /parameter time CLOCK_PERIOD = 10ns;
+    parameter time CLOCK_PERIOD = 10ns;
     //parameter int BOUNCE_CLOCKS = BOUNCE_TIME / CLOCK_PERIOD;
     parameter int BOUNCE_CLOCKS = (DEBOUNCE_DELAY_US * CLOCK_FREQUENCY) / 1_000_000;
     parameter int BOUNCE_CLOCKS_LOW_RANGE = BOUNCE_CLOCKS / 100 + 1;
@@ -104,7 +104,7 @@ module top_tb ();
             // repeat(BOUNCE_CLOCKS)
             //     @(negedge clk);
         end
-            
+
         // Create a bouncy signal
         $display("[%0tns] Transmitting 0x%h", $time/1000.0, char_value);
         bounce_btnc(1);
@@ -112,7 +112,7 @@ module top_tb ();
         // Wait until busy goes high
         wait (rx_busy == 1'b1);
 
-    endtask    
+    endtask
 
     //////////////////////////////////
     // Main Test Bench Process
@@ -124,7 +124,7 @@ module top_tb ();
         // Simulate some time with no stimulus/reset
         #100ns
 
-        // Set some defaults        
+        // Set some defaults
         rst_n = 1;
         btnc = 0;
         sw = 8'h00;
@@ -171,7 +171,7 @@ module top_tb ();
                 @(negedge clk);
         end
 
-        $done;
+        $stop;
     end
 
 endmodule
