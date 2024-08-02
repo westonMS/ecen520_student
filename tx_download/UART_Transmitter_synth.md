@@ -17,6 +17,10 @@ Make sure your add this directory to your repository and place all assignment sp
 * You will also need to tag your repository when you are ready to submit.
 * You are required to make frequent commits when you have design failures as described [here](../resources/assignment_mechanics.md#github-commits)
 
+### Debouncer and One-Shot Detector
+
+**HERE**
+
 ### Create a top-level FPGA design
 
 The first step in this assignment is to create a top-level design that instances your transmitter and hooks it up to the I/O pins of the FPGA board.
@@ -39,7 +43,7 @@ Create a top-level module named `tx_top.sv` with the following ports and paramet
 | DEBOUNCE_DELAY_US | integer | 10_000 | Specifies the minimum debounce delay in micro seconds|
 
 Create your top-level design as follows:
-  * Instance your transmitter component from the previous assignment
+  * Instance your transmitter component from the previous assignment (**Note**: do not copy your file into this assignment directory. Instead, use a relative path to the file in the previous assignment directory. If you need to make changes to the transmitter, make them in the previous directory. Your original submission should be properly tagged).
   * Attach the lower 8 switches on the board to the input to the UART transmitter (i.e., the value of the switches is the value to transmit over the UART).
   * Attach the lower 8 switches on the board to the lower 8 LEDs. This way the user can more easily see the value of the switches with the LEDs
   * Attach the `tx_busy` signal from your transmitter to the LED16_B signal. This is the "blue" color for tri-color LED 16 on the board (it should flash blue when the transmitter is busy)
