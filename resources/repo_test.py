@@ -139,6 +139,8 @@ class check_for_untracked_files(repo_test):
         return "Check for untracked GIT files"
 
     def perform_test(self):
+        # TODO: look into using repo.untracked_files instead of git command
+
         untracked_files = self.rts.repo.git.ls_files("--others", "--exclude-standard")
         if untracked_files:
             self.rts.print_error(f'Untracked files found in repository:')
