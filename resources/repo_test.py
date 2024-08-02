@@ -151,6 +151,29 @@ class check_for_untracked_files(repo_test):
         self.rts.print(f'No untracked files found in repository')
         return True
 
+class check_for_ignored_files(repo_test):
+    ''' 
+    '''
+    def __init__(self, repo_test_suite):
+        '''  '''
+        super().__init__(repo_test_suite)
+
+    def module_name(self):
+        return "Check for ignored GIT files"
+
+    def perform_test(self):
+        # TODO: look into using repo.untracked_files instead of git command
+
+        ignored_files = self.rts.repo.git.ls_files("--others", "--ignored", "--exclude-standard")
+        if ignored_files:
+            self.rts.print_error(f'Ignored files found in repository:')
+            files = ignored_files.splitlines()
+            for file in files:
+                self.rts.print_error(f'  {file}')
+            return False
+        self.rts.print(f'No ignored files found in repository')
+        return True
+
 class check_for_uncommitted_files(repo_test):
 
     def __init__(self, repo_test_suite):
