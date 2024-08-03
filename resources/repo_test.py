@@ -1,7 +1,10 @@
 #!/usr/bin/python3
 
 '''
-A set of classes for performing tests within a git repo.
+A set of classes for evaluating the code within a git repo.
+Base classes can be created for performing tool-specific evaluation.
+Several generic test classes are included that could be used in any
+type of repository.
 '''
 
 # Manages file paths
@@ -128,7 +131,7 @@ class make_test(repo_test):
         return True
 
 class check_for_untracked_files(repo_test):
-    ''' 
+    ''' This tests the repo for any untracked files. Returns true if there are no untracked files.
     '''
     def __init__(self, repo_test_suite, ignore_ok = True):
         '''  '''
@@ -152,19 +155,25 @@ class check_for_untracked_files(repo_test):
         return True
 
 class check_for_ignored_files(repo_test):
-    ''' 
+    ''' Checks to see if there are any ignored files in the repo directory.
+    The intent is to make sure that these ignore files are remoted through a clean
+    operation. Returns true if there are no ignored files in the directory.
     '''
-    def __init__(self, repo_test_suite):
+    def __init__(self, repo_test_suite, check_path = None):
         '''  '''
         super().__init__(repo_test_suite)
+        if check_path is None:
+            self.check_path = repo_test_suite.working_path
+        else:
+            self.check_path = check_path
 
     def module_name(self):
         return "Check for ignored GIT files"
 
     def perform_test(self):
         # TODO: look into using repo.untracked_files instead of git command
-
-        ignored_files = self.rts.repo.git.ls_files("--others", "--ignored", "--exclude-standard")
+        self.rts.print(f'Checking for ignored files at {self.check_path}')
+        ignored_files = self.rts.repo.git.ls_files(self.check_path, "--others", "--ignored", "--exclude-standard")
         if ignored_files:
             self.rts.print_error(f'Ignored files found in repository:')
             files = ignored_files.splitlines()
@@ -194,37 +203,50 @@ class check_for_uncommitted_files(repo_test):
         self.rts.print(f'No uncommitted files found in repository')
         return True
 
-class list_git_commits(repo_test):
+class check_number_of_files(repo_test):
+    ''' Counts the number of files in the repo directory.
+    '''
 
-    def __init__(self, repo_test_suite, repo_path = None):
+    def __init__(self, repo_test_suite, max_files=sys.maxsize):
         '''  '''
         super().__init__(repo_test_suite)
-        if repo_path is None:
-            self.repo_path = self.rts.script_path
+        self.max_files = max_files
+
+    def module_name(self):
+        return "Count files in repo dir"
+
+    def perform_test(self):
+        uncommitted_files = self.repo.git.status("--suno")
+        if uncommitted_files:
+            self.rts.print_error(f'Uncommitted files found in repository:')
+            files = uncommitted_files.splitlines()
+            for file in files:
+                self.rts.print_error(f'  {file}')
+            return False
+        self.rts.print(f'No uncommitted files found in repository')
+        return True
+
+class list_git_commits(repo_test):
+    ''' Prints the commits of the given directory in the repo.
+    '''
+    def __init__(self, repo_test_suite, check_path = None):
+        '''  '''
+        super().__init__(repo_test_suite)
+        if check_path is None:
+            self.check_path = self.rts.working_path
         else:
-            self.repo_path = repo_path
+            self.check_path = check_path
 
     def module_name(self):
         return "List Git Commits"
 
     def perform_test(self):
-        commits = self.rts.repo.git.log("--pretty=format:%h %ad \"%s\"", "--date=format:%m%d%y_%H:%M")
-        commits = commits.splitlines()
-        if commits:
-            self.rts.print(f'{len(commits)} Commits found in {self.repo_path}:')
-            for commit in commits:
-                # e387b37 073124/17:36 "Updated requriements"
-                commit_re = re.compile(r'(\w+)\s+(\d+)\s+\"(.*)\"')
-                match = commit_re.match(commit)
-                self.rts.print(f'  {commit}')
-                # TODO: print all the files changed in the commit (option?)
-                if match:
-                    hash = match.group(1)
-                    date = match.group(2)
-                    message = match.group(3)
-                    files = self.repo.git.show("--name-status", hash)
-                    for file in files:
-                        self.rts.print(f'    {file}')
-            return True
-        self.rts.print(f'No uncommitted files found in repository')
-        return False
+        relative_path = self.check_path.relative_to(self.rts.repo_root_path)
+        self.rts.print(f'Checking for commits at {relative_path}')
+        commits = list(self.rts.repo.iter_commits(paths=relative_path))
+        for commit in commits:
+            commit_hash = commit.hexsha[:7]
+            commit_message = commit.message.strip()
+            commit_date = commit.committed_datetime.strftime('%Y-%m-%d %H:%M:%S')
+            print(f"{commit_hash} - {commit_date} - {commit_message}")
+        return True

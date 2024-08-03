@@ -9,7 +9,6 @@ import re
 import os
 import git
 
-
 class repo_test_suite():
     ''' This class is used to manage the execution of "tests" within a specific directories
     of a GitHub repository for the purpose of evaluating code within github repositories.
@@ -37,11 +36,18 @@ class repo_test_suite():
     '''
 
     def __init__(self, repo, working_dir = None, print_to_stdout = True, verbose = False, summary_log_filename = None, log_dir = None, ):
+        # Reference to the Git repository
         self.repo = repo
+        self.repo_root_path = pathlib.Path(repo.git.rev_parse('--show-toplevel'))
+        # The path to the directory where the top-level script has been run
         self.script_path = os.getcwd()
+        # Directory where tests should be completed. This may be different from the script_path
         self.working_path = pathlib.Path(working_dir)
         if working_dir is None:
             self.working_path = self.script_path
+        # Relative repo path
+        self.relative_repo_path = self.working_path.relative_to(self.repo_root_path)        
+        # Directory of the logs
         self.log_dir = log_dir
         self.tests_to_perform = [] # list of test_module objects
         self.print_to_stdout = print_to_stdout
@@ -71,9 +77,13 @@ class repo_test_suite():
         # Print to std_out?
         print(message)
 
+    def print_test_status(self, message):
+        self.print(message)
+
     def run_tests(self):
         ''' Run all the registered tests '''
-        for test in self.tests_to_perform:
+        for idx, test in enumerate(self.tests_to_perform):
+            self.print_test_status(f"Step {idx+1}.")
             #self.print_step_message(test.module_name())
             self.execute_test_module(test)
         # Wrap up

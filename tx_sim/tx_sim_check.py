@@ -11,9 +11,6 @@ sys.path.append( str(resources_path) )
 import repo_test_suite
 import repo_test
 
-# Path of script that is being run
-SCRIPT_PATH = pathlib.Path(__file__).absolute().parent.resolve()
-
 def main():
     ''' Main executable for script
     '''
