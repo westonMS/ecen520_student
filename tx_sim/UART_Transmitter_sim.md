@@ -4,7 +4,7 @@ For this first assignment, you will be designing and simulating a UART transmitt
 Hopefully this assignment will be more of a review as the design of a UART transmitter is a common exercise in many introductory digital design courses.
 The purpose of this assignment is to help you review your digital design skills and help you become familiar with the simulation tool.
 You will not be synthesizing and downloading your design in this lab as you will focus primarily on design and simulation. 
-We will synthesize and download the design in the next lab.
+You will synthesize and download the design in the next lab.
 
 ## Assignment Mechanics
 
