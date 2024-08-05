@@ -9,6 +9,17 @@ import re
 import os
 import git
 
+class TermColor:
+    """ Terminal codes for printing in color """
+    PURPLE = "\033[95m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    END = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
 class repo_test_suite():
     ''' This class is used to manage the execution of "tests" within a specific directories
     of a GitHub repository for the purpose of evaluating code within github repositories.
@@ -58,10 +69,17 @@ class repo_test_suite():
             self.test_log_fp = open(summary_log_filepath, "w")
             if not self.test_log_fp:
                 self.print_error("Error opening file for writing:", summary_log_filepath)
+        # Colors
+        self.test_color = TermColor.YELLOW
+        self.error_color = TermColor.RED
 
     def add_test_module(self, test_module):
         ''' Add a test module. '''
         self.tests_to_perform.append(test_module)
+
+    def print_color(self, color, *msg):
+        """ Print a message in color """
+        print(color + " ".join(str(item) for item in msg), TermColor.END)
 
     def print(self, message, verbose_message = False):
         """ Prints a string to the appropriate locations. """
@@ -75,10 +93,10 @@ class repo_test_suite():
     def print_error(self, message):
         """ Prints a string to the appropriate locations. """
         # Print to std_out?
-        print(message)
+        self.print_color(self.error_color,message)
 
     def print_test_status(self, message):
-        self.print(message)
+        self.print_color(self.test_color,message)
 
     def run_tests(self):
         ''' Run all the registered tests '''
@@ -101,7 +119,7 @@ class repo_test_suite():
         module_name = test_module.module_name()
         result = test_module.perform_test()
         if result:
-            self.print(str.format("Success:{}\n",module_name))
+            self.print_test_status(str.format("Success:{}\n",module_name))
         else:
             self.print_error(str.format("Failed:{}\n",module_name))
         return result

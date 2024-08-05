@@ -9,14 +9,16 @@ import re
 import os
 import git
 
+from repo_test import repo_test
+
 def test_args_520(description, parser=None):
     if parser is None:
         parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--noclean", action="store_true", help="Skip the \"clean\" portions of the test")
-    parser.add_argument("--cleanonly", action="store_true", help="Only complete the \"clean\" portion of the test")
+    parser.add_argument("--nobuild", action="store_true", help="Only complete the \"clean\" portion of the test")
     return parser
 
-class list_git_commits(repo_test):
+class get_err_git_commits(repo_test):
     ''' Prints the commits of the given directory in the repo.
     '''
     def __init__(self, repo_test_suite, check_path = None):

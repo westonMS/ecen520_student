@@ -215,11 +215,11 @@ class check_for_uncommitted_files(repo_test):
         return "Check for uncommitted GIT files"
 
     def perform_test(self):
-        uncommitted_files = self.repo.git.status("--suno")
-        if uncommitted_files:
+        uncommitted_changes = self.rts.repo.index.diff(None)
+        modified_files = [item.a_path for item in uncommitted_changes if item.change_type == 'M']
+        if modified_files:
             self.rts.print_error(f'Uncommitted files found in repository:')
-            files = uncommitted_files.splitlines()
-            for file in files:
+            for file in modified_files:
                 self.rts.print_error(f'  {file}')
             return False
         self.rts.print(f'No uncommitted files found in repository')
