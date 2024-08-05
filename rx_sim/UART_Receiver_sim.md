@@ -8,11 +8,14 @@ Notes:
 
 # UART Receiver and Testbench
 
-The purpose of this assignment is to create a UART receiver module and verify that it operates correctly.
+The purpose of this assignment is to create a UART receiver module and verify that it operates correctly with a custom testbench.
+<!--
 You will also be creating a UART transmitter simulation model as part of the assignment verification.
+-->
 
 ## Assignment Instructions
 
+<!--
 Create a new directory in your repository as described above and put all the files for this assignment within this directory.
 
 ### Create a UART transmitter simulation model
@@ -32,16 +35,19 @@ You should design your transmitter model such that:
 Design your transmitter model as a simple, non-synthesizable model using the testbench principles discussed in class (you may want to refer to the [rx_model.sv](../uart_transmitter/rx_model.sv) used in the previous assignment).
 
 **TODO**: Add a reset?
+-->
 
-### Create a UART Receiver Module
+## Create a UART Receiver Module
 
+The primary goal of this assignment is to design a UART receiver module that can receive data from a UART transmitter.
 Create a UART receiver module that actively monitors the input data in signal receives a single byte of data and a parity bit.
 <!-- 
 Note that all other modules or testbenches you create for this assignment can use any Verilog or SystemVerilog constructs.
 The intent of this requirement is to give you practice using old style `reg` and `wire` data types.
 -->
-There is a ECEN 220 lab description for the the [UART Receiver](http://ecen220wiki.groups.et.byu.net/labs/lab-11/) but the requirements for this receiver may be slightly different.
-Provide the following ports and parameters on your receiver:
+There is a ECEN 220 lab description for the  [UART Receiver](http://ecen220wiki.groups.et.byu.net/labs/lab-11/) but the requirements for this receiver may be slightly different.
+
+Create your receiver with the following ports and parameters
 
 | Port Name | Direction | Width | Function |
 | ---- | ---- | ---- | ----  |
@@ -63,7 +69,7 @@ Design your receiver such that:
 * The 'rst' signal will initialize the internal state machine to idle
 * Provide a single cycle 'data_strobe' signal when you have received a new data value. The `dout` signal should have the new data value when the `data_strobe` signal is asserted.
 * When your state machine is reset, it should check to make sure the 'din' input is '1' before going to an IDLE state and accepting received data. The purpose of this is to avoid the case when the input line starts out low on reset.
-* Set the `rx_error` signal to zero every time you start a new transaction. When a transaction is complete, set the `rx_error` signal to '1' if any of the three conditions occur:
+* Set the `rx_error` signal low every time you start a new transaction. When a transaction is complete, set the `rx_error` signal to '1' if any of the three conditions occur:
   * A '0' is not sampled in the middle of the first start bit
   * The received parity is incorrect
   * A stop bit is not received (i.e., you do not receive a '1' in the middle of the stop bit)
@@ -74,24 +80,27 @@ Design your receiver such that:
 
 Note that you must follow the [Level 2](../resources/coding_standard#level_2) coding standards for your Verilog files.
 
-### Receiver Testbench
+## Receiver Testbench
 
-Create a dedicated testbench module for your receiver with the following requirements:
-  * Instance your transmitter simulation model
+Create a dedicated testbench for your receiver with the following requirements:
+  * Instance your synthesizable transmitter from the first assignment
+    * In your testbench print a message to the terminal whenever a new transmission begins. Print the data being sent and the parity mode. Save this value so you can check to see if the receiver received the correct value.
   * Instance your receiver module and hook up the transmitter to the receiver
+    * In your testbench, print a message whenever the receiver has received a new data value. Print the data value received. Also, check to make sure that the value received is the same as the value sent by the transmitter.
   * Generate a free oscillating clock
-  * Provide initial values for the inputs to your receiver
-    * First let a few clocks go by (5+) so that it operates with invalid inputs for a few cycles
-    * Set all inputs to a default value that does not start the receiver
-  * Issue a reset by waiting a few clock cycles, issuing the reset for a few clock cycles, and then deasserting the reset
-  * Send at least 10 characters over the transmitter with the following specifications:
-    * Provide a random number between 100 and 200 clock cycles between each transaction
-    * Transmit a random 8-bit value for each transaction
+  * Implement the following sequence of events for the testbench
+    * Provide a few clocks to the receiver/transmitter with undefined inputs. This should put both modules in a bad state
+    * Provide initial default values for the inputs to your modules (but do not start the receiver)
+    * Provide a few more clocks to clock in these inputs
+    * Issue a reset by waiting a few clock cycles, issuing the reset for a few clock cycles, and then deasserting the reset
+  * Provide a testbench parameter `NUMBER_OF_CHARS` with a default value of 10 that indicates the number of characters to transmit    
+  * Create a loop that issues one character over the transmitter at a time with the following specifications:
+    * Provide a random number between 100 and 2000 clock cycles before starting a transmission
+    * Transmit a random 8-bit value for the transaction
     * Check to make sure the character you sent is the character you received. Print a message that you correctly received the character you sent or print that an error occurred.
-  * Provide a test where you send a character with an invalid parity and make sure the receiver detects the error
-  * End your simulation with `$finish`
+  * End your simulation with `$stop`
 
-You may want to review the [testbench](../uart_transmitter/tx_tb.sv) that was created for you in the previous assignment as an example to get started.
+You may want to review the [testbench](../tx_sim/tx_tb.sv) that was created for you in the previous assignment as an example to get started.
 You may refer to and model your testbench after the [ECEN 220 Transmitter testbench](http://ecen220wiki.groups.et.byu.net/resources/testbenches/tb_tx.sv) as well.
 When your transmitter operates correctly with the testbench, create a makefile with the `sim_rx` rule that will simulate your transmitter with the testbench from the command line.
 In addition, create a makefile rule `sim_rx_115200_even` that simulates the receiver with a baud rate of 115200 and even parity.
