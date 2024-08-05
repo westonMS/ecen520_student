@@ -92,21 +92,23 @@ class file_exists_test(repo_test):
     ''' Checks to see if files exist in a repo directory
     '''
 
-    def __init__(self, repo_test_suite, repo_file_path, abort_on_error=True):
+    def __init__(self, repo_test_suite, repo_file_list, abort_on_error=True):
         '''  '''
         super().__init__(repo_test_suite, abort_on_error)
-        self.repo_file_path = repo_file_path
+        self.repo_file_list = repo_file_list
 
     def module_name(self):
         return "File Check"
 
     def perform_test(self):
-        file_path = self.rts.working_path / self.repo_file_path
-        if not os.path.exists(file_path):
-            self.rts.print_error(f'File does not exist: {file_path}')
-            return False
-        self.rts.print(f'File ok: {file_path}')
-        return True
+        return_val = True
+        for repo_file in self.repo_file_list:
+            file_path = self.rts.working_path / repo_file
+            if not os.path.exists(file_path):
+                self.rts.print_error(f'File does not exist: {file_path}')
+                return_val = False
+            self.rts.print(f'File exists: {file_path}')
+        return return_val
 
 class make_test(repo_test):
     ''' Performs makefile rules
@@ -152,6 +154,26 @@ class check_for_untracked_files(repo_test):
                 self.rts.print_error(f'  {file}')
             return False
         self.rts.print(f'No untracked files found in repository')
+        return True
+
+class check_for_max_repo_files(repo_test):
+    ''' 
+    '''
+    def __init__(self, repo_test_suite, max_dir_files):
+        '''  '''
+        super().__init__(repo_test_suite)
+        self.max_dir_files = max_dir_files
+
+    def module_name(self):
+        return "Check for max tracked repo files"
+
+    def perform_test(self):
+        tracked_files = self.rts.repo.git.ls_files(self.rts.relative_repo_path).split('\n')
+        n_tracked_files = len(tracked_files)
+        self.rts.print(f"{n_tracked_files} Tracked git files in {self.rts.relative_repo_path}")
+        if n_tracked_files > self.max_dir_files:
+            self.rts.print_error(f"  Too many tracked files")
+            return False
         return True
 
 class check_for_ignored_files(repo_test):
