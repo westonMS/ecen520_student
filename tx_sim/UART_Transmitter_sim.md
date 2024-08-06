@@ -134,21 +134,17 @@ sim_tx_115200_even: tx.sv
 
 ## Submission and Grading
 
-Once you have completed the assignment and verified that everything is working correctly, follow these steps to formally submit your assignment.
+Required Makefile rules:
+* `sim_tx`: performs command line simulation of tx testbench using the default parameters
+* `sim_tx_115200_even`: performs command line simulation of tx testbench with a baud rate of 115200 and even parity
 
-1. Prepare your repository
-  * Make sure all the _essential_ files needed to complete your project are committed into your repository. If you are missing any of the essential files you will not receive credit for the lab
-  * Make sure no _non-essential_ files are committed to your repository (like log files or temporary project files). You will lose 10% on your lab if any non-essential temporary files are committed to your repository.
-  * Make sure you have a `.gitignore` file for your assignment directory and that all intermediate files are ignored.
-  * Make sure you have a `makefile` with all the necessary make rules
-    * `sim_tx`: performs command line simulation of tx testbench using the default parameters
-    * `sim_tx_115200_even`: performs command line simulation of tx testbench with a baud rate of 115200 and even parity
-2. Commit and tag your repository
-  * Make sure all of your files are committed and properly tagged (using the tag listed at the top of the lab)
-  * Make sure you follow the [Git repository standards](../resources/coding_standard.md#git-repository-standards)
-3. Create your assignment [Readme.md](../resources/assignment_mechanics.md#assignment-submission) file based on the template
-  * Add the following items for the assignment-specific section of the readme:
-    1. **Coding Skill Summary**: Provide a short summary of how much HDL review you had to do to complete the assignment. Also, rate your HDL designs skills from 1-10.
+Test Script: `tx_sim_check.py`
+
+Assignment specific responses:
+* **Coding Skill Summary**: Provide a short summary of how much HDL review you had to do to complete the assignment. Also, rate your HDL designs skills from 1-10.
+
+
+
 
 ### Grading
 
