@@ -5,7 +5,7 @@
 
 module tx_top_tb ();
 
-    logic clk, rst_n, rst, btnc;
+    logic clk, rst_n, rst, btnc, btnc_bouncy;
     logic [7:0] sw;
     logic [7:0] led_i;
     logic [7:0] led_sw;
@@ -15,27 +15,35 @@ module tx_top_tb ();
     logic [7:0] rx_data;
     logic [7:0] char_to_send = 0;
 
-    int bounce_delay_clocks, bounces;
-    //int NUMBER_OF_CHARS = 2;
-
-    parameter int DEBOUNCE_DELAY_US = 1000; // 1 ms
-    //parameter time BOUNCE_TIME = 1ms;
+    parameter integer DEBOUNCE_DELAY_US = 1000; // 1 ms
     parameter time CLOCK_FREQUENCY = 100_000_000;
-    parameter time CLOCK_PERIOD = 10ns;
-    //parameter int BOUNCE_CLOCKS = BOUNCE_TIME / CLOCK_PERIOD;
-    parameter int BOUNCE_CLOCKS = (DEBOUNCE_DELAY_US * CLOCK_FREQUENCY) / 1_000_000;
-    parameter int BOUNCE_CLOCKS_LOW_RANGE = BOUNCE_CLOCKS / 100 + 1;
-    parameter int BOUNCE_CLOCKS_HIGH_RANGE = BOUNCE_CLOCKS / 4;
-    parameter int NUM_BOUNCES_LOW_RANGE = 2;
-    parameter int NUM_BOUNCES_HIGH_RANGE = 5;
     parameter int NUMBER_OF_CHARS = 3;
+
+    //parameter time CLOCK_PERIOD = 10ns;
+    localparam integer BOUNCE_CLOCKS = (DEBOUNCE_DELAY_US * CLOCK_FREQUENCY) / 1_000_000;
+
+    // Clock Generator
+    always begin
+        clk <=1; #5ns;
+        clk <=0; #5ns;
+    end
+
+    // reset
+    assign rst = ~rst_n;
+
+    // Debounce generator
+    gen_bounce gen_bounce(
+        .clk(clk),
+        .sig_in(btnc),
+        .bounce_out(btnc_bouncy)
+    );
 
     // Instantiate Top-level design
     tx_top tx_top(
         .CLK100MHZ(clk),
         .CPU_RESETN(rst_n),
         .SW(sw),
-        .BTNC(btnc),
+        .BTNC(btnc_bouncy),
         .LED(led_i),
         .UART_RXD_OUT(tx_out),
         .LED16_B(tx_busy)
@@ -50,37 +58,8 @@ module tx_top_tb ();
         .dout(rx_data)
     );
 
-    // Clock Generator
-    always
-    begin
-        clk <=1; #5ns;
-        clk <=0; #5ns;
-    end
-
-    // reset
-    assign rst = ~rst_n;
     // LEDs
     assign led_sw = led_i[7:0];
-
-    // Task for generating a bouncy signal
-    task bounce_btnc(input end_result);
-        //$display("[%0tns] Starting bouncy btnc", $time/1000.0);
-        bounces = $urandom_range(NUM_BOUNCES_LOW_RANGE,NUM_BOUNCES_HIGH_RANGE);
-        for(int i = 0; i < bounces; i++) begin
-            // Bounce to end result
-            btnc = end_result;
-            bounce_delay_clocks = $urandom_range(BOUNCE_CLOCKS_LOW_RANGE,BOUNCE_CLOCKS_HIGH_RANGE);
-            repeat(bounce_delay_clocks)
-                @(negedge clk);
-            // Bounce to opposite of end result
-            btnc = ~end_result;
-            bounce_delay_clocks = $urandom_range(BOUNCE_CLOCKS_LOW_RANGE,BOUNCE_CLOCKS_HIGH_RANGE);
-            repeat(bounce_delay_clocks)
-                @(negedge clk);
-        end
-        // Done bouncing. Set to end result
-        btnc = end_result;
-    endtask
 
     task test_led( input [7:0] sw_val);
         sw = sw_val;
