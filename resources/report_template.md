@@ -1,4 +1,4 @@
-# UART Transmitter Simulation
+# Name of the Assignment
 
 **Name**: Your Name<br>
 **Hours Spent**: # hrs

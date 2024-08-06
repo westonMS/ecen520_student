@@ -9,7 +9,8 @@
 
 For this assignment you will create a top-level design for your UART transmitter, synthesize the transmitter, and download it to the FPGA board.
 
-**Assignment reminders:**
+**Assignment reminders**
+
 * As with the previous assignment, you must place your assignment code within a specific assignment directory as described in the [assignments overview](../Readme.md) page.
 Make sure your add this directory to your repository and place all assignment specific code in this directory.
 * You will also need to tag your repository when you are ready to submit.
@@ -22,27 +23,38 @@ You will need to create a top-level design that includes your transmitter module
 You will need to create an xdc file that maps the pins of the FPGA to the ports of your design and you will need to run your full design files and xdc file through the Xilinx synthesis tools. 
 The instructions below will guide you through these steps.
 
+### Debouncer
 
-### Debouncer and One Shot Circuit
-
-Before creating the top-level design, create a debouncer circuit to debounce the buttons on the FPGA board.
+Before creating the top-level design, create a debouncer module to debounce the buttons on the FPGA board.
 A debouncer is needed to prevent a single press of the button from being interpreted as multiple presses and thus causing multiple characters to be transmitted over the UART.
-The idea behind the debouncer is to make sure that the button signal is stable for a minimum amount of time before actually accepting the signal as valid (i.e., ignore short pulses).
-There is a [lab description](https://byu-cpe.github.io/ecen320/labs/lab-08/) of a debouncer that you can use as a reference.
-Your debouncer will need to have a parameter that specifies the minimum debounce delay in microseconds. 
-This way you can simulate your debouncer with relatively short debounce times but synthesize your debouncer with a longer debounce time.
-You will be using the debouncer module in several assignments during the semester.
+You will use this module in several of your future assignments during the semester.
 
-In addition to the debouncer, you need to create a "one shot" circuit that will generate a single pulse output when the button is pressed.
-The purpose of the one-shot circuit is to generate a single pulse when the button is pressed and to ignore any additional presses until the pulse has completed.
-If you do not add a one-shot circuit then the button press will be interpreted as multiple presses and multiple characters will be transmitted over the UART.
-The output of the debouncer plus one-shot circuits will go into the `send` input of your transmitter module.
+Create a module named `debouncer` with the following top-level ports and parameters:
+| Port Name | Direction | Width | Function |
+| ---- | ---- | ---- | ---- |
+| clk | Input | 1 | Clock |
+| rst | Input | 1 | Synchronous reset |
+| async_in | Input | 1 | Asynchronous input signal to be debounced |
+| debounce_out | Output | 1 | Debounced output signal |
+| Parameter Name | Type | Default | Purpose |
+| ---- | ---- | ---- | ---- |
+| DEBOUNCE_CLKS | integer | 1_000| Number of clocks for debounce delay |
+There is a [lab description](https://byu-cpe.github.io/ecen320/labs/lab-08/) of a debouncer that you can use as a reference.
+Your debouncer will need to have a parameter that specifies the number of clocks needed for the debounce delay.
+This way you can simulate your debouncer with relatively short debounce times but synthesize your debouncer with a longer debounce time.
+
+Design your debouncer with the following requirements:
+* Place a two flip-flop synchronizer on the input `async_in` signal to sycnrhonize the input signal to the clock domain.
+* Create a counter within your module to count the `DEBOUNCE_CLKS` before transitioning the output signal. You can use the `$clog2` function to determine how many bits are needed for the counter (i.e., `$clog2(DEBOUNCE_CLKS)`)
+
+When you have created your debouncer, simulate your debouncer with the testbench `debouncer_tb.sv` until your debouncer passes all tests.
+Create a mkefile rule named `sim_debouncer` that will perform this simulation from the command line using the default parameters.
 
 ### Create a top-level FPGA design
 
 Create a top-level design that instances your transmitter and hooks it up to the I/O pins of the FPGA board.
 For this assignment and throughout the class we will be using the [Nexys 4 DDR](https://reference.digilentinc.com/programmable-logic/nexys-4-ddr/start) board and the top-level ports will correspond to the port names on this board.
-Create a top-level module named `tx_top.sv` with the following ports and parameters (the port names are derived from the nexys4 DDR XDC file):
+Create a top-level module named `tx_top` with the following ports and parameters (the port names are derived from the nexys4 DDR XDC file):
 
 | Port Name | Direction | Width | Function |
 | ---- | ---- | ---- | ----  |
@@ -60,11 +72,11 @@ Create a top-level module named `tx_top.sv` with the following ports and paramet
 | DEBOUNCE_DELAY_US | integer | 10_000 | Specifies the minimum debounce delay in micro seconds|
 
 Create your top-level design as follows:
+  * Instance your debouncer module and hook up the `BTNC` button to the input of the debouncer. In addition, create a "one-shot" circuit on the output of the debouncer. The purpose of the one-shot circuit is to generate a single pulse when the button is pressed and to ignore any additional presses until the pulse has completed. If you do not add a one-shot circuit then the button press will be interpreted as multiple presses and multiple characters will be transmitted over the UART. The output of the debouncer plus one-shot circuits will go into the `send` input of your transmitter module.
   * Instance your transmitter component from the previous assignment (**Note**: do not copy your file into this assignment directory. Instead, use a relative path to the file in the previous assignment directory. If you need to make changes to the transmitter, make them in the previous directory. Your original submission should be properly tagged).
-  * Attach the lower 8 switches on the board to the input to the UART transmitter (i.e., the value of the switches is the value to transmit over the UART).
+  * Attach the lower 8 switches on the board to the input to the UART transmitter (i.e., the value of the switches is the value to transmit over the UART). Insert a register between the switches and the transmitter input to synchronize the input to the global clock.
   * Attach the lower 8 switches on the board to the lower 8 LEDs. This way the user can more easily see the value of the switches with the LEDs
   * Attach the `tx_busy` signal from your transmitter to the LED16_B signal. This is the "blue" color for tri-color LED 16 on the board (it should flash blue when the transmitter is busy)
-  * Hook up the center button (BTNC) to your circuit so that when the button is pressed one character will be transmitted. You will need a debouncer and one-shot circuit to accomplish this. You will need to implement a simple state machine or handshaking protocol to make sure that only one character is sent for each button press.
   * Attach the CPU reset so that when pressed, the system will be reset (note that the input reset polarity is negative asserted). Add two synchronizing flip-flops between the reset button and your internal reset signal to synchronize the reset signal to the global clock. We will discuss the purpose of these synchronizing flip flops later in the class
 <!--
   * Add a flip-flop on the TX output of your transmitter module and send the output to the top-level TX output. This flip-flop will make sure that the output signal does not glitch. 
