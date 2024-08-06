@@ -55,6 +55,7 @@ module debounce_tb ();
     // Task for generating a bounce delay. 
     task simple_toggle_delay_test();
         automatic logic initial_debounce_out = debounce_out;
+        $display("[%0tns] Long signal test", $time/1000.0);
         toggle_sig_in();
         // Wait for the debounce to propagatsim:/debounce_tb/#INITIAL#110(#ublk#203632578#110)e and check to see that it doesn't propagate too early
         check_debounce(initial_debounce_out,BOUNCE_CLOCKS-2);
@@ -64,6 +65,7 @@ module debounce_tb ();
     // Send a short runt pulse and check to make sure nothing has changed
     task runt_pulse_test();
         automatic logic initial_debounce_out = debounce_out;
+        $display("[%0tns] Runt pulse test", $time/1000.0);
         toggle_sig_in();
         @(negedge clk);
         sig_in = debounce_out;
@@ -75,6 +77,7 @@ module debounce_tb ();
     // Send a short runt pulse and check to make sure nothing has changed
     task runt_pulse_accumulate_test();
         automatic logic initial_debounce_out = debounce_out;
+        $display("[%0tns] Runt accumulate test", $time/1000.0);
         @(negedge clk);
         sig_in = debounce_out;
         for (int i = 0; i < 2 * BOUNCE_CLOCKS+10; i++) begin
