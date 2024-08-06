@@ -24,6 +24,7 @@ def main():
     repo_test.check_for_max_repo_files(checker,20)
     repo_test.check_for_uncommitted_files(checker)
     if not args.nobuild:
+        repo_test.make_test(checker,"sim_debounce")
         repo_test.make_test(checker,"sim_tx_top")
         repo_test.make_test(checker,"sim_tx_top_115200_even")
         # TODO: need to make files for different implementation steps have different names

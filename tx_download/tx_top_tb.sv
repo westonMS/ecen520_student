@@ -15,12 +15,12 @@ module tx_top_tb ();
     logic [7:0] rx_data;
     logic [7:0] char_to_send = 0;
 
-    parameter integer DEBOUNCE_DELAY_US = 1000; // 1 ms
-    parameter time CLOCK_FREQUENCY = 100_000_000;
-    parameter int NUMBER_OF_CHARS = 3;
-
-    //parameter time CLOCK_PERIOD = 10ns;
-    localparam integer BOUNCE_CLOCKS = (DEBOUNCE_DELAY_US * CLOCK_FREQUENCY) / 1_000_000;
+    parameter integer DEBOUNCE_TIME_US = 100;
+    parameter logic PARITY = 1'd1;
+    parameter integer BAUD_RATE = 19_200;
+    parameter integer NUMBER_OF_CHARS = 3;
+    localparam integer CLK_FREQUENCY = 100_000_000;
+    localparam integer BOUNCE_CLOCKS = CLK_FREQUENCY / 1_000_000 * DEBOUNCE_TIME_US;
 
     // Clock Generator
     always begin
@@ -32,14 +32,16 @@ module tx_top_tb ();
     assign rst = ~rst_n;
 
     // Debounce generator
-    gen_bounce gen_bounce(
+    gen_bounce #(.BOUNCE_CLOCKS_LOW_RANGE(2), .BOUNCE_CLOCKS_HIGH_RANGE(20)) 
+    bounce_btnc(
         .clk(clk),
         .sig_in(btnc),
         .bounce_out(btnc_bouncy)
     );
 
     // Instantiate Top-level design
-    tx_top tx_top(
+    tx_top #(.DEBOUNCE_TIME_US(DEBOUNCE_TIME_US), .PARITY(PARITY), .BAUD_RATE(BAUD_RATE))
+    tx_top(
         .CLK100MHZ(clk),
         .CPU_RESETN(rst_n),
         .SW(sw),
@@ -50,7 +52,8 @@ module tx_top_tb ();
     );
 
     // Instantiate RX simulation model
-    rx_model rx_model(
+    rx_model #(.PARITY(PARITY), .BAUD_RATE(BAUD_RATE))
+    rx_model(
         .clk(clk),
         .rst(rst),
         .rx_in(tx_out),
@@ -74,22 +77,24 @@ module tx_top_tb ();
 
         // set switches
         sw = char_value;
-        repeat(10)
+        repeat(100)
             @(negedge clk)
 
-        // Make sure btnc is low
-        if (btnc != 0) begin
-            bounce_btnc(0);
-            // repeat(BOUNCE_CLOCKS)
-            //     @(negedge clk);
-        end
-
-        // Create a bouncy signal
-        $display("[%0tns] Transmitting 0x%h", $time/1000.0, char_value);
-        bounce_btnc(1);
-
+        // Press the button and wait enough clocks to get it to go through the debouncer
+        btnc = 1;
+        repeat(BOUNCE_CLOCKS)
+            @(negedge clk);
         // Wait until busy goes high
         wait (rx_busy == 1'b1);
+        // Create a bouncy signal
+        $display("[%0tns] Transmitting 0x%h", $time/1000.0, char_value);
+
+        // Wait long enough for the zero to propagate through the debouncer
+        btnc = 0;
+        repeat(BOUNCE_CLOCKS*1.2)
+            @(negedge clk);
+        // Wait until busy goes low
+        wait (rx_busy == 1'b0);
 
     endtask
 
@@ -98,7 +103,9 @@ module tx_top_tb ();
     //////////////////////////////////
     initial begin
         int clocks_to_delay;
-        $display("===== TX TB =====");
+        $display("===== TX Top TB =====");
+        $display("BAUD_RATE %d PARITY %d DEBOUNCE_TIME_US %d BOUNCE_CLOCKS %d",
+            BAUD_RATE, PARITY, DEBOUNCE_TIME_US, BOUNCE_CLOCKS);
 
         // Simulate some time with no stimulus/reset
         #100ns
@@ -125,28 +132,21 @@ module tx_top_tb ();
         #100ns;
         sw = 8'h00;
 
-        //	Send some bounces. Should not transmit.
+        // Send a short signal that doesn't make it throught the debouncer
         $display("[%0tns] Sending some bounces. Should not transmit", $time/1000.0);
-        bounce_btnc(1);
-        bounce_btnc(0);
-        #10us;
+        btnc = 1;
+        repeat(BOUNCE_CLOCKS/2)
+            @(negedge clk);
+        btnc = 0;
+        repeat(10)
+            @(negedge clk);
 
         //	Transmit a few characters to design
         #10us;
         for(int i = 0; i < NUMBER_OF_CHARS; i++) begin
             char_to_send = $urandom_range(0,255);
             initiate_tx(char_to_send);
-            // Wait until transmission is over
-            wait (rx_busy == 1'b0);
-
-            // Wait some more to make sure that we don't start a new transfer
-            repeat(5000)
-                @(negedge clk);
-
-            // Lower the button
-            bounce_btnc(0);
-            // Wait long enough for button 0 to propagate
-            repeat(2*BOUNCE_CLOCKS)
+            repeat(10000)
                 @(negedge clk);
         end
 
