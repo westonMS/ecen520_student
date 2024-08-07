@@ -48,7 +48,7 @@ Design your debouncer with the following requirements:
 * Create a counter within your module to count the `DEBOUNCE_CLKS` before transitioning the output signal. You can use the `$clog2` function to determine how many bits are needed for the counter (i.e., `$clog2(DEBOUNCE_CLKS)`)
 
 When you have created your debouncer, simulate your debouncer with the testbench `debouncer_tb.sv` until your debouncer passes all tests.
-Create a mkefile rule named `sim_debouncer` that will perform this simulation from the command line using the default parameters.
+Create a makefile rule named `sim_debouncer` that will perform this simulation from the command line using the default parameters.
 
 ### Create a top-level FPGA design
 
@@ -85,8 +85,8 @@ Create your top-level design as follows:
 A top-level testbench, [top_tb.sv](./top_tb.sv), has been created for you to test your top-level design.
 This testbench also uses the [rx_model.sv](../tx_sim/rx_model.sv) simulation model from the previous assignment.
 Make sure your top-level design successfully passes this testbench.
-Add a makefile rule named `sim_top` that will perform this simulation from the command line using the default parameters.
-In addition, make a second makefile rule named `sim_top_115200_even` that performs this simulation with the parameters changed as follows: baud rate = 115200 and even parity.
+Add a makefile rule named `sim_tx_top` that will perform this simulation from the command line using the default parameters.
+In addition, make a second makefile rule named `sim_tx_top_115200_even` that performs this simulation with the parameters changed as follows: baud rate = 115200 and even parity.
 Do not proceed to the next step until you have successfully simulated your top-level design for both baud rates and parities.
 
 ## Design Implementation
@@ -245,17 +245,17 @@ You may want to view an [ASCII Table](https://commons.wikimedia.org/wiki/File:AS
 (didn't work for me)
 screen /dev/ttyUSB2 115200,cs8,parenb,-parodd,-cstopb
 -->
-You will need to provide a makefile rule named `gen_bit` that generates a bitfile with the name `tx.bit` by running the makefile.
+You will need to provide a makefile rule named `gen_tx_bit` that generates a bitfile with the name `tx.bit` by running the makefile.
 The following example demonstrates such a rule.
 ```
-gen_bit:
+gen_tx_bit:
   vivado -mode batch -source tx_synth.tcl
 ```
 You will need to have a `.tcl` script that includes all the tcl commands needed to perform this step.
 See the [instructions](../resources/vivado_command_line.md#synthesis-and-implementation) for details on what needs to be included in this script (also, make sure you commit this script to your repository).
 Make sure you can properly create a bitstream using this makefile rule and that you test this bitfile on your own board.
 
-You will also need a rule named `gen_bit_115200_even` that generates a different bitfile with the name `tx_115200_even.bit` that uses a baud rate of 115200 and even parity.
+You will also need a rule named `gen_tx_bit_115200_even` that generates a different bitfile with the name `tx_115200_even.bit` that uses a baud rate of 115200 and even parity.
 
 
 <!--
@@ -309,58 +309,18 @@ add_files -fileset constrs_1 -norecurse top.xdc
 
 * Incorrectly set the terminal settings. In particularly, not setting "parity = odd". If you leave parity to none then you may get incorrect results.
 
+## Assignment Submission
 
-## Submission and Grading
+The following assignment specific items should be included in your repository:
 
-Once you have completed the assignment and verified that everything is working correctly, follow these steps to formally submit your assignment.
+1. Required Makefile rules:
+    * `sim_debouncer`: Simulate your debouncer
+    * `sim_tx_top`:
+    * `sim_tx_top_115200_even`:
+    * `gen_tx_bit`: Generate a bitfile for your transmitter
+    * `gen_tx_bit_115200_even`: Generate a bitfile for your transmitter with a baud rate of 115200 and even parity
+2. Assignment specific Questions:
+    1. The synthesis log will summarize any state machines that it created. Provide a table listing the state and the encoding that the synthesis tool used for your transmitter state machine.
+    1. Provide a table summarizing of the resources your design uses. Use the template table below. You can get this information from the implementation utilization report.
+    1. Determine the "Worst Negative Slack" (or WNS). This is found in the timing report and indicates how much timing you slack you have with the current clocking (we will discuss this later in the semester).
 
-1. Prepare your repository
-  * Make sure all the _essential_ files needed to complete your project are committed into your repository, that no _non-essential_ files are committed to your repository, and that you have a `.gitignore` file for your assignment directory and that all intermediate files are ignored.
-  * Make sure you have a `makefile` with all the necessary make rules
-    * `sim_top`:
-    * `sim_top_115200_even`:
-    * `gen_bit`: Generates a bitstream for your top-level design using the default parameters
-    * `gen_bit_115200_even`: Generates a bitstream for your top-level design with a baud rate of 115200 and even parity
-2. Commit and tag your repository
-  * Make sure all of your files are committed and properly tagged
-  * Make sure you follow the [Git repository standards](../resources/coding_standard.md#git-repository-standards)
-3. Create your assignment [Readme.md](../resources/assignment_mechanics.md#assignment-submission) file
-  * Create the template file based on the instructions linked above
-  * Add the following items for the assignment-specific section of the readme:
-    1. **Resoures**: Provide a summary of the number of resources your design uses (see the output from the utilization report). Specifically, indicate the number of `Slice LUTs`, `Slice Registers`, and `Bonded IOB` resources your design uses.
-    2. **Warnings**: Provide a list of all the _synthesis_ warnings generated while sythesizing your design. You don't need to understand or remove them but I want to make sure you look at them and copy them. The warnings can be found in the implementation log during the synthesis step of Vivado.
-    3. **Timing**: Determine the "Worst Negative Slack" (or WNS). This is found in the timing report and indicates how much timing you slack you have with the current clocking.
-
-
-
-### Grading
-
-I will follow these steps to grade this assignment:
-
-1. Fetch and get tag
-```
-git fetch --all --tags
-git pull
-git checkout tags/<assignment tag>
-```
-2. Check date of submission
-```
-git log -n 1 tags/<assignment tag>
-```
-3. Simulate and build your design
-   * run `make sim_top`
-   * run `make sim_top_115200_even`
-   * run `make gen_bit`
-   * run `make gen_bit_115200_even`
-6. Download both bitfiles and make sure they both work
-7. Check to see if there are any files that are generated during the build process but not ignored. I will run the following command:
-`git ls-files . --exclude-standard --others`. <br>If there are any files not ignored after running the above make commands then you will lose points.
-8. run `make clean`
-I will clean the directory where I ran your commands to make sure the clean works properly. 
-I will check to see if your `make clean` cleaned all the ignore files: `git check-ignore *` <br>
-If there are any files that remain that are not cleaned by the `make clean` then you will lose some points.
-7. Review the number of commits and the commit messages to your assignment directory **TODO: (list the command I am going to run)**
-10. Review your Readme.md to see if it has all the requirements
-11. Review your code for compliance to the coding standards
-
-check for implementation reports

@@ -68,7 +68,7 @@ Create your transmitter with the following ports and parameters (you must name t
 | busy | Output | 1 | Indicates that the transmitter is in the middle of a transmission |
 | dout | Output | 1 | Transmitter output signal |
 | Parameter Name | Type | Default | Purpose |
-| ---- | ---- | ---- | ----  |
+| ---- | ---- | ---- | ---- |
 | CLK_FREQUENCY | integer | 100_000_000 | Clock frequency of the design |
 | BAUD_RATE | integer | 19_200 | Baud rate of the design |
 | PARITY | integer | 1 | Parity type (0 = Even, 1 = Odd) |
@@ -132,45 +132,19 @@ sim_tx_115200_even: tx.sv
     vsim -c work.tx_tb -gBAUD_RATE=115200 -gPARITY=0 -do "run -all"
 ```
 
-## Submission and Grading
+After your module passes both testbenches you are ready to submit your assignment.
 
-Required Makefile rules:
-* `sim_tx`: performs command line simulation of tx testbench using the default parameters
-* `sim_tx_115200_even`: performs command line simulation of tx testbench with a baud rate of 115200 and even parity
+## Assignment Submission
 
-Test Script: `tx_sim_check.py`
+The assignment submission steps are described in the [assignment mechanics checklist](../resources/assignment_mechanics.md#assignment-submission-checklist) page.
+Carefully review these steps as you submit your assignment.
 
-Assignment specific responses:
-* **Coding Skill Summary**: Provide a short summary of how much HDL review you had to do to complete the assignment. Also, rate your HDL designs skills from 1-10.
+The following assignment specific items should be included in your repository:
 
-
-
-
-### Grading
-
-I will follow these steps to grade this assignment.
-I will run these commands on the digital lab computers.
-You may want to perform these steps as well to make sure that your submission is submitted correctly.
-
-1. Fetch and get tag of your submission
-```
-git fetch --all --tags
-git pull
-git checkout tags/<assignment tag>
-```
-2. Check date of submission
-```
-git log -n 1 tags/<assignment tag>
-```
-3. Simulate and build your design
-   * run `make sim_tx`
-   * run `make sim_tx_115200_even`
-7. Check to see if there are any files that are generated during the build process but not ignored. I will run the following command:
-`git ls-files . --exclude-standard --others`. <br>If there are any files not ignored after running the above make commands then you will lose points.
-7. Review the number of commits and the commit messages to your assignment directory: `git log --pretty=format:"%ad %s" --date=short --`. You will need to demonstrate that you have made several error commits as part of your history. `git log --pretty=format:"%ad %s" --date=format:"%m%d%y/%H:%M"`
-8. run `make clean`
-I will clean the directory where I ran your commands to make sure the clean works properly. 
-I will check to see if your `make clean` cleaned all the ignore files: `git check-ignore *` <br>
-If there are any files that remain that are not cleaned by the `make clean` then you will lose some points.
-10. Review your Readme.md to see if it has all the requirements
-11. Review your code for compliance to the coding standards
+1. Required Makefile rules:
+    * `sim_tx`: performs command line simulation of tx testbench using the default parameters
+    * `sim_tx_115200_even`: performs command line simulation of tx testbench with a baud rate of 115200 and even parity
+2. Assignment specific Questions:
+    1. Provide a short summary of how much HDL review you had to do to complete the assignment. Also, rate your HDL designs skills from 1-10.
+    2. Indicate the simulation time of the two different simulations and suggest why the simulation times are different
+    3. Add the following statement to your report: "I have read the ECEN 520 assignment submission process and have resolved any questions I have with this process"
