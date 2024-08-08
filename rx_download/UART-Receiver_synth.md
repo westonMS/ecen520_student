@@ -17,34 +17,61 @@ Notes:
 The purpose of this assignment is to create a top-level UART receiver/transmitter in SystemVerilog and a testbench to validate your receiver.
 You will also create a seven segment display controller for displaying data from your UART on the seven segment display.
 
-## Assignment Instructions
-
-Create a new directory in your repository as described above and put all the files for this assignment within this directory.
-
-### Seven Segment Display Controller
+Create a new directory in your repository and put all the files for this assignment within this directory.
 
 ### Seven Segment Controller and Testbench
 
-Create a new "seven segment controller" module in VHDL that will drive the seven segment display of the Nexys DDR board. 
+For this assignment and for most future assignments you will need to display values on the seven segment display of the Nexys DDR board.
+To make this easier, you will create a seven segment display controller that will drive the seven segment display.
+
+Create a "seven segment controller" module that will drive the seven segment display of the Nexys DDR board. 
 This module can be based on the [segment sevent display](http://ecen220wiki.groups.et.byu.net/labs/lab-05/) module developed in ECEN 220.
 Note that there are eight digits on the seven segment display for this board so you will need to support all eight digits with your module. 
-Make this module parametrizable with the following two parameters:
+Include the following ports and parameters in your module:
 
-  * CLOCK_FREQUENCY (in Hz). Set the default to the clock rate of the nexys board.
-  * MIN_DIGIT_DISPLAY_TIME_MS (in ms). Set the default to 20 ms. Use this parameter to determine how long to display each digit
+| Port Name | Direction | Width | Function |
+| ---- | ---- | ---- | ----  |
+| clk | Input | 1 | Clock |
+| rst | Input | 1 | Reset |
+| display_val | Input | 32 | 32-bit value to display |
+| dp | Input | 8 | Digit point (one for each segment) |
+| blank | Input | 1 | When asserted, blank the display |
+| segments | Output | 7 | The seven segment drivers (see table below) |
+| dp_out | Output | 1 | The output digit point driver signal |
+| an_out | Output | 8 | Anode signal for each segment |
+| ---- | ---- | ---- |
+| CLK_FREQUECY | 100_000_000 | The clock frequency |
+| SEGMENT_DISPLAY_US  | 10_000 | The amount of time to display each digit  |
  
+The anode signals should be driven in a round-robin fashion so that each digit is displayed for a short amount of time.
+These signals are low asserted. 
+The cathode signals are also low asserted and are defined as follows:
+
+```
+    ----A----
+    |       |
+    |       |
+    F       B
+    |       |
+    |       |
+    ----G----
+    |       |
+    |       |
+    E       C
+    |       |
+    |       |
+    ----D----
+```
+
+The seven segments are organized into a multi-bit bus (segments[6:0]) where segments(6) corresponds to segment 'A' and segments(0) corresponds to segment 'G'.
+
 Create a simple testbench for validating that your seven-segment display controller.
 This testbench should check to make sure the seven segment display asserts the appropriate segment signals.
 You will need to lower the MIN_DIGIT_DISPLAY_TIME_MS so that you can simulate this in a reasonable amount of time.
 Create a makefile rule `make sim_ssd` for this simulation.
 
-<!--
-I am going to hold off on creating a testbench for this. I think it will be too much work for this assignment.
 
-**Create a testbench for the seven segment controller**
-
-`sim_7seg`
--->
+`make sim_ssd`
 
 ### Create top-level design
 
@@ -62,6 +89,11 @@ Create a top-level design that uses the following top-level ports:
 | LED16_B | Output | 1 | Used for TX busy signal |
 | LED17_R | Output | 1 | Used for RX busy signal |
 | LED17_G | Output | 1 | Used for RX error signal |
+| LED17_G | Output | 1 | Used for RX error signal |
+| AN | [7:0] | Output | Anode signals for the seven segment display |
+| CA, CB, CC, CD, CE, CF, CG | [6:0] | Output | Seven segment display cathhode signals |
+| DP | Output | 1 | Seven segment display digit point signal |
+
 | Parameter Name | Default Value | Purpose |
 | ---- | ---- | ---- |
 | CLK_FREQUECY | 100_000_000 | Specify the clock frequency |
