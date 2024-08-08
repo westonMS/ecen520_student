@@ -46,7 +46,7 @@ class repo_test_suite():
 
     '''
 
-    def __init__(self, repo, working_dir = None, print_to_stdout = True, verbose = False, summary_log_filename = None, log_dir = None, ):
+    def __init__(self, repo, test_name = None, working_dir = None, print_to_stdout = True, verbose = False, summary_log_filename = None, log_dir = None, ):
         # Reference to the Git repository
         self.repo = repo
         self.repo_root_path = pathlib.Path(repo.git.rev_parse('--show-toplevel'))
@@ -69,6 +69,7 @@ class repo_test_suite():
             self.test_log_fp = open(summary_log_filepath, "w")
             if not self.test_log_fp:
                 self.print_error("Error opening file for writing:", summary_log_filepath)
+        self.test_name = test_name
         # Colors
         self.test_color = TermColor.YELLOW
         self.error_color = TermColor.RED
@@ -100,13 +101,17 @@ class repo_test_suite():
 
     def run_tests(self):
         ''' Run all the registered tests '''
+        self.print_test_status(f"Running test {self.test_name}")
+        self.iterate_through_tests()
+        # Wrap up
+        self.print_test_status(f"Test completed")
+
+    def iterate_through_tests(self):
+        ''' Run all the registered tests (but no setup or wrap-up) '''
         for idx, test in enumerate(self.tests_to_perform):
             self.print_test_status(f"Step {idx+1}.")
             #self.print_step_message(test.module_name())
             self.execute_test_module(test)
-        # Wrap up
-        #self.print_message_summary()
-        #self.clean_up_test()
 
     def execute_test_module(self, test_module):
         ''' Executes the 'perform_test' function of the tester_module and logs its result in the log file '''

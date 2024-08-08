@@ -11,6 +11,22 @@ import git
 
 from repo_test import repo_test
 
+
+class test_suite_520():
+
+    def __init__(self, repo, min_err_commits = 3, max_repo_files = 20):
+        # Reference to the Git repository
+        super().__init__(repo)
+        repo_test.list_git_commits(self)
+        get_err_git_commits(self,min_err_commits)
+        repo_test.check_for_max_repo_files(self,max_repo_files)
+        # repo_test.make_test(checker,"sim_tx")
+        # repo_test.make_test(checker,"sim_tx_115200_even")
+        # repo_test.check_for_untracked_files(checker)
+        # repo_test.make_test(checker,"clean")
+        # repo_test.check_for_ignored_files(checker)
+
+
 def test_args_520(description, parser=None):
     if parser is None:
         parser = argparse.ArgumentParser(description=description)
