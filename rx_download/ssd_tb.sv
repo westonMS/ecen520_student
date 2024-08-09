@@ -20,13 +20,13 @@ module ssd_tb ();
 
     // Instance seven_segment module
     seven_segment #(.CLK_FREQUENCY(CLK_FREQUENCY), .MIN_SEGMENT_DISPLAY_US(MIN_SEGMENT_DISPLAY_US))
-    ssd(.clk(clk), .rst(rst), .display_val(display_val), .dp(dp), .blank(blank), 
+    ssd(.clk(clk), .rst(rst), .display_val(display_val), .dp(dp), .blank(blank),
         .segments(segments), .dp_out(dp_out), .an_out(an_out));
 
     // Instance seven_segment_check module
     seven_segment_check #(.CLK_FREQUENCY(CLK_FREQUENCY), .MIN_SEGMENT_DISPLAY_US(MIN_SEGMENT_DISPLAY_US))
-    ssd_check(.clk(clk), .rst(rst), .display_val(display_val), .dp(dp), .blank(blank), 
-        .segments(segments), .dp_out(dp_out), .an_out(an_out), .new_value(new_value),
+    ssd_check(.clk(clk), .rst(rst), .dp(dp_out),
+        .segments(segments), .anode(an_out), .new_value(new_value),
         .output_display_val(output_display_val));
 
     // Clock Generator

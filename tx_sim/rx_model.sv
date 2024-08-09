@@ -10,12 +10,12 @@ module rx_model (clk, rst, rx_in, busy, dout);
     output logic busy;
     output logic [7:0] dout;
 
-    parameter CLK_FREQUECY = 100_000_000;
+    parameter CLK_FREQUENCY = 100_000_000;
     parameter BAUD_RATE = 19_200;
     parameter PARITY = 1;
 
     localparam time BAUD_PERIOD_NS = 1s / BAUD_RATE; 
-    localparam BAUD_CLOCK_CYCLES = CLK_FREQUECY / BAUD_RATE;
+    localparam BAUD_CLOCK_CYCLES = CLK_FREQUENCY / BAUD_RATE;
     localparam HALF_BAUD_CLOCK_CYCLES = BAUD_CLOCK_CYCLES / 2;
 
     logic [7:0] r_char;

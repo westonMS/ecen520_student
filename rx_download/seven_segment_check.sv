@@ -3,21 +3,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 `timescale 1ns / 1ps
 
-module seven_segment_check(clk, rst, display_val, dp, blank, segments, dp_out, an_out, 
+module seven_segment_check(clk, rst, segments, dp, anode,
     new_value, output_display_val);
 
     input clk, rst;
-    input [31:0] display_val;
-    input [7:0] dp;
-    input blank;
     input logic [6:0] segments;
-    input logic dp_out;
-    input logic [7:0] an_out;
+    input logic dp;
+    input logic [7:0] anode;
     output logic new_value;
     output logic [31:0] output_display_val;
-    //output logic [7:0] new_digit  = 8'h00;
-    //output logic [55:0] display_segments; // 8 x 7 = 56
-    //output logic [7:0] display_dp = 8'hxx;
 
     parameter int CLK_FREQUENCY = 100_000_000;   // 100 MHz
     parameter int MIN_SEGMENT_DISPLAY_US = 10_000;
@@ -26,7 +20,7 @@ module seven_segment_check(clk, rst, display_val, dp, blank, segments, dp_out, a
     localparam int MIN_SEGMENT_CLOCKS = CLK_FREQUENCY / 1_000_000 * MIN_SEGMENT_DISPLAY_US;
 
     // Convert standard segment settings to the corresonding hex values
-    function logic [3:0] segment_to_hex(input logic [6:0] segments);
+    function automatic logic [3:0] segment_to_hex(input logic [6:0] segments);
         begin
             case(segments)
 
@@ -55,8 +49,8 @@ module seven_segment_check(clk, rst, display_val, dp, blank, segments, dp_out, a
     logic error_last_cycle = 0;
     always_ff @(posedge clk) begin
         if (WARN_ON_SIMULTANEOUS_ANODES > 0) begin
-            if (an_out != 8'hff && $countones(~an_out) > 1 && error_last_cycle == 0) begin
-                $display("Warning: More than one anode is being displayed at a time: %b", an_out);
+            if (anode != 8'hff && $countones(~anode) > 1 && error_last_cycle == 0) begin
+                $display("Warning: More than one anode is being displayed at a time: %b", anode);
                 error_last_cycle <= 1;
             end
             else
@@ -64,22 +58,22 @@ module seven_segment_check(clk, rst, display_val, dp, blank, segments, dp_out, a
         end
     end
 
-    // Keep track of the current segment and dp values (update when corresponding an_out is low)
+    // Keep track of the current segment and dp values (update when corresponding anode is low)
     logic [6:0] display_segments[7:0]; // An array of 8 segments with each segment being 7 bits
     logic [7:0] display_dp; // An array of 8 dp values
     always_ff @(posedge clk) begin
         // Update those digits that are being displayed
         for (int i = 0; i < 8; i = i + 1) begin
-            if (an_out[i] == 0) begin
+            if (anode[i] == 0) begin
                 display_segments[i] <= segments;
-                display_dp[i] <= dp[i];
+                display_dp[i] <= dp;
                 output_display_val[4*i +: 4] <= segment_to_hex(segments);
             end
         end
     end
 
     // Print the current value of the segments
-    function void print_segments();
+    function automatic void print_segments();
         byte segment_chars[8][7];
         byte digit_point[8];
         const byte SPACE = 8'h20;
@@ -140,29 +134,29 @@ module seven_segment_check(clk, rst, display_val, dp, blank, segments, dp_out, a
     endfunction
 
 
-    logic [7:0] an_out_d; // One clock cycle delay of an_out (used for detecting anode changes)
+    logic [7:0] anode_d; // One clock cycle delay of anode (used for detecting anode changes)
     logic [7:0] annode_collect; // Collect the anodes that are being displayed (to see if all have been displayed)
     integer anode_count = 0; // Count the number of clocks that a single anode is displayed
     //logic new_value;
     logic [7:0] new_digit;
-    assign new_digit = (an_out ^ an_out_d) & an_out; // combinatinoal
+    assign new_digit = (anode ^ anode_d) & anode; // combinatinoal
     always_ff @(posedge clk) begin
-        an_out_d <= an_out;
+        anode_d <= anode;
         new_value <= 0;
         anode_count <= anode_count + 1;
         // TODO: Check for blanking
         // See if we are transitioning from invalid annode to valid anode
-        if (!(^an_out === 1'bX) && (^an_out_d === 1'bX)) begin
+        if (!(^anode === 1'bX) && (^anode_d === 1'bX)) begin
             // Starting a new display cycle
             $display("[%0tns] Valid Annode values", $time/1000);
             anode_count <= 0;
             annode_collect <= 8'h00;
         end
         // See if we are transitioning from one valid anode to another valid anode
-        else if(an_out != an_out_d) begin
+        else if(anode != anode_d) begin
             if (anode_count > MIN_SEGMENT_CLOCKS + 2 || anode_count < MIN_SEGMENT_CLOCKS - 2 ) begin
                 $display("[%0tns] Warning: Invalid number of segment clocks: %0d expecting %0d %h %h", $time/1000,
-                    anode_count, MIN_SEGMENT_CLOCKS,an_out,an_out_d);
+                    anode_count, MIN_SEGMENT_CLOCKS,anode,anode_d);
             end
             anode_count <= 0;
             annode_collect <= annode_collect | new_digit;

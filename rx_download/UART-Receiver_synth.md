@@ -125,14 +125,22 @@ Design your top-level circuit as follows:
 
 **HERE**
 
-Create testbench for your top-level rx/tx design based on the testbench in the tx_download assignment.
-The following adaptations should be made to this testbench:
+Create testbench for your top-level rx/tx design by copying and modifying the [tx_top_tb.sv](../tx_download/tx_top_tb.sv) file from the tx download assignment and renaming to rxtx_top_tb.sv:
+The following adaptations should be made to the structure of this testbench:
+* Add a parameter MIN_SEGMENT_DISPLAY_US to the testbench with a default of 200. The defaults for the testbench should be a baud rate of 19200, a clock frequency of 100 MHz, and odd parity.
+* Remove the rx_model simulation model
 * Instance your rxtx_top design instead of the tx_top design
-* Hook up the seven_segment_check model to your top-level design so you can see the output of the seven segment display
-* Attach the `UART_RXD_OUT` output of your top-level design (i.e., transmitter output) to the `UART_TXD_IN` input of your top-level design (i.e., receiver input). This way when you transmit a character from your transmit module, it will be received by your receiver module.
+  * Pass the testbench parameters down to the rxtx_top design
+  * Attach the `UART_RXD_OUT` output of your top-level design (i.e., transmitter output) to the `UART_TXD_IN` input of your top-level design (i.e., receiver input). This way when you transmit a character from your transmit module, it will be received by your receiver module.
+* Hook up the seven_segment_check model to your top-level design so you can see the output of the seven segment display (see ssd_tb.sv)
+The following changes should be made to the behavior of the testbench:
+* 
+
+HERE
+
+
 
 This testbench should be designed as follows:
-* Make the top-level design parameterizable in baud rate, clock frequency, and parity. The default should be a baud rate of 19200, a clock frequency of 100 MHz, and odd parity.
 * Perform the following sequence of events for your testbench:
   * Execute the simulation for a few clock cycles without setting any of the inputs
   * Set default values for the inputs (reset, buttons, and switchces)
