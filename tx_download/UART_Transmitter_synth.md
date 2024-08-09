@@ -67,6 +67,7 @@ Create a top-level module named `tx_top` with the following ports and parameters
 | LED16_B | Output | 1 | Used for TX busy signal |
 | Parameter Name | Type | Default | Purpose |
 | ---- | ---- | ---- | ----  |
+| CLK_FREQUENCY  | 100_000_000 | Specify the clock frequency |
 | BAUD_RATE | integer | 19_200 | Baud rate of the design |
 | PARITY | integer | 1 | Parity type (0 = Even, 1 = Odd) |
 | DEBOUNCE_DELAY_US | integer | 10_000 | Specifies the minimum debounce delay in micro seconds|
@@ -323,4 +324,4 @@ The following assignment specific items should be included in your repository:
     1. The synthesis log will summarize any state machines that it created. Provide a table listing the state and the encoding that the synthesis tool used for your transmitter state machine.
     1. Provide a table summarizing of the resources your design uses. Use the template table below. You can get this information from the implementation utilization report.
     1. Determine the "Worst Negative Slack" (or WNS). This is found in the timing report and indicates how much timing you slack you have with the current clocking (we will discuss this later in the semester).
-
+    1. Indicate how many times you had to synthesize and download your bitstream before your circuit worked.

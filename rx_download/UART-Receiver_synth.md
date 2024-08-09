@@ -65,13 +65,13 @@ The cathode signals are also low asserted and are defined as follows:
 
 The seven segments are organized into a multi-bit bus (segments[6:0]) where segments(6) corresponds to segment 'A' and segments(0) corresponds to segment 'G'.
 
-Create a simple testbench for validating that your seven-segment display controller.
-This testbench should check to make sure the seven segment display asserts the appropriate segment signals.
-You will need to lower the MIN_DIGIT_DISPLAY_TIME_MS so that you can simulate this in a reasonable amount of time.
+A testbench ([ssd_tb.sv](ssd_tb.sv)) is provided for you to validate your seven segment display controller.
+There is also a simulation model ([seven_segment_check.sv](seven_segment_check.sv)) of the SSD controller that you will need to compile with your testbench.
+Make sure your seven segment display controller passes this testbench before moving on to the next step.
 Create a makefile rule `make sim_ssd` for this simulation.
 
-
-`make sim_ssd`
+After your seven segment display controller is working correctly, create a makefile rule `make synth_ssd` that will synthesize your controller in out-of-context mode.
+See the instructions from the [previous assignment](../rx_sim/UART_Receiver_sim.md#receiver-synthesis) to describe how to do this.
 
 ### Create top-level design
 
@@ -91,44 +91,53 @@ Create a top-level design that uses the following top-level ports:
 | LED17_G | Output | 1 | Used for RX error signal |
 | LED17_G | Output | 1 | Used for RX error signal |
 | AN | [7:0] | Output | Anode signals for the seven segment display |
-| CA, CB, CC, CD, CE, CF, CG | [6:0] | Output | Seven segment display cathhode signals |
+| CA, CB, CC, CD, CE, CF, CG | [6:0] | Output | Seven segment display cathode signals |
 | DP | Output | 1 | Seven segment display digit point signal |
-
 | Parameter Name | Default Value | Purpose |
 | ---- | ---- | ---- |
-| CLK_FREQUECY | 100_000_000 | Specify the clock frequency |
-| BAUD_RATE  | 19_200 | Specify the receiver baud rate |
+| CLK_FREQUENCY  | 100_000_000 | Specify the clock frequency |
+| BAUD_RATE | 19_200 | Specify the receiver baud rate |
 | PARITY | 1 | Specify the parity bit (0 = even, 1 = odd) |
-
+| SEGMENT_DISPLAY_US  | 10_000 | The amount of time in microseconds to display each digit (10 ms) |
+| DEBOUNCE_DELAY_US | integer | 10_000 | Specifies the minimum debounce delay in micro seconds|
 
 Design your top-level circuit as follows:
+* Attach the `CPU_RESETN` signal to two flip-flops to synchronize it to the clock. Use this synchronized signal for the reset in your design (note that the input reset polarity is negative asserted)
+* Hook up the center button (BTNC) to your circuit through a debouncer. Make sure you pass in the top-level debounce time parameter. Create one-shot logic for the tx_write signal from the debounce output.
 * Instance your transmitter
   * Hook the TX output signal to the top-level `UART_RXD_OUT` pin of the board (i.e., to the host)
   * Attach the lower 8 switches on the board to the input to the UART transmitter (i.e., the value of the switches is the value to transmit over the UART).
   * Attach the lower 8 switches on the board to the lower 8 LEDs. This way the user can more easily see the value of the switches with the LEDs
   * Attach the tx busy signal to the LED16_B signal to provide a blue LED indicator when the transmitter is busy
 * Instance your receiver
-  * Hook the RX signal to the top-level `UART_TXD_IN` pin of the board (i.e., to the host)
+  * Add a two flip-flop synchronizer between the RX input signal (`UART_TXD_IN`) and the intput rx signal to your receiver. This is necessary to avoid metastibilty and properly synchronize the asynchronous input.
   * Hook up the upper 8 LEDs to the data recevied by your receiver. These LEDs should display the last value received by the receiver. You should only update these LEDs when the 'data_strobe' indicates a new character has been received
   * Attach the rx busy signal to the LED17_R signal to provide a red LED indicator when the receiver is busy
   * Attach the rx error signal to the LED17_G signal to provide a green LED indicator when the receiver has an error
-* Hook up the center button (BTNC) to your circuit so that when the button is pressed one character will be transmitted. You will need a debouncer and one-shot circuit to accomplish this. You will need to implement a simple state machine or handshaking protocol to make sure that only one character is sent for each button press.
-* Attach the `CPU_RESETN` signal so that when pressed, the system will be reset (note that the input reset polarity is negative asserted)
-* Add a two flip-flop synchronizer between the RX input signal and your receiver. This is necessary to avoid metastibilty and properly synchronize the asynchronous input.
+* Create four 8-bit registers that hold the last four values received by your receiver
+  * When the data_strobe occurs, load the value recieved by the recevier into the first register and shift the values in the other registers.
+* Instance your seven segment display controller as described below
+  * Drive the data to display with the four 8-bit registers described above. The most recent value receibed should be driven on the right two digits, the second value received should be driven on the left two digits, and so on.
+  * Drive all zeros on the digit point input and tie the "blank" signal to zero. 
+  * Hook up the seven segment display outputs to the top-level outputs of the design (i.e., AN, CA, CB, CC, CD, CE, CF, CG, DP)
 
 ### Top-level testbench
 
-Create another testbench for your top-level design.
+**HERE**
+
+Create testbench for your top-level rx/tx design based on the testbench in the tx_download assignment.
+The following adaptations should be made to this testbench:
+* Instance your rxtx_top design instead of the tx_top design
+* Hook up the seven_segment_check model to your top-level design so you can see the output of the seven segment display
+* Attach the `UART_RXD_OUT` output of your top-level design (i.e., transmitter output) to the `UART_TXD_IN` input of your top-level design (i.e., receiver input). This way when you transmit a character from your transmit module, it will be received by your receiver module.
+
 This testbench should be designed as follows:
 * Make the top-level design parameterizable in baud rate, clock frequency, and parity. The default should be a baud rate of 19200, a clock frequency of 100 MHz, and odd parity.
-* Create a free-running clock
-* Instance your top-level design
-* Attach the `UART_RXD_OUT` output of your top-level design (i.e., transmitter output) to the  `UART_TXD_IN` input of your top-level design (i.e., receiver input). This way when you transmit a character from your transmit module, it will be received by your receiver module.
 * Perform the following sequence of events for your testbench:
   * Execute the simulation for a few clock cycles without setting any of the inputs
   * Set default values for the inputs (reset, buttons, and switchces)
   * Wait for a few clock cycle, Assert the reset for a few clock cycles, Deassert the reset (don't forget that the reset signal for the board is low asserted)
-  * Perform at least 3 character transfers as follows:
+  * Perform at least 8 character transfers as follows:
     * Choose a random value for the character you want to send
     * Set the switch values to this value
     * Press btnc long enough to make it through your debouncer
@@ -194,18 +203,4 @@ Once you have completed the assignment and verified that everything is working c
     3. **Timing**: Determine the "Worst Negative Slack" (or WNS). This is found in the timing report and indicates how much timing you slack you have with the current clocking.
 
 
-
-### Grading
-
-I will follow these steps to grade this assignment:
-
-1. Fetch and get tag
-2. Check date of submission
-3. Simulate and build your design (run all five make rules)
-6. Download  both designs  and make sure they work properly
-7. Check to see if there are any files that are generated during the build process but not ignored.
-8. run `make clean` and see if there are any files that are not deleted that should be deleted.
-10. Review your Readme.md to see if it has all the requirements
-11. Review your code for compliance to the coding standards
-  * Make sure your uart receiver is using only Verilog 95 constructs
-
+    1. Indicate how many times you had to synthesize and download your bitstream before your circuit worked.
