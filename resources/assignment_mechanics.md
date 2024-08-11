@@ -230,8 +230,10 @@ Complete the following steps every time you create a local repository for an ass
 git clone git@github.com:byu-ecen520-fall2024/520-assignments-<githubusername>.git ~/ecen520
 # Create a remote repository to the starter code
 cd ~/ecen520
-git remote add startercode https://github.com/byu-cpe/ecen520_student
+git remote add startercode git@github.com:byu-cpe/ecen520_student.git
 ```
+<!-- https://github.com/byu-cpe/ecen520_student -->
+
 
 See Steps 4-5 of the [ECEN 323 web page](https://byu-cpe.github.io/ecen323/tutorials/git_setup/) for more details of this process.
 
