@@ -53,9 +53,10 @@ class repo_test_suite():
         # The path to the directory where the top-level script has been run
         self.script_path = os.getcwd()
         # Directory where tests should be completed. This may be different from the script_path
-        self.working_path = pathlib.Path(working_dir)
-        if working_dir is None:
-            self.working_path = self.script_path
+        if working_dir is not None:
+            self.working_path = pathlib.Path(working_dir)
+        else:
+            self.working_path = pathlib.Path(self.script_path)
         # Relative repo path
         self.relative_repo_path = self.working_path.relative_to(self.repo_root_path)        
         # Directory of the logs
@@ -101,16 +102,22 @@ class repo_test_suite():
 
     def run_tests(self):
         ''' Run all the registered tests '''
-        self.print_test_status(f"Running test {self.test_name}")
-        self.iterate_through_tests()
+        self.print_test_start_message()
+        self.iterate_through_tests(self.tests_to_perform)
         # Wrap up
+        self.print_test_end_message()
+
+    def print_test_start_message(self):
+        """ Start message at start of test """
+        self.print_test_status(f"Running test {self.test_name}")
+
+    def print_test_end_message(self):
         self.print_test_status(f"Test completed")
 
-    def iterate_through_tests(self):
+    def iterate_through_tests(self, list_of_tests, start_step = 1):
         ''' Run all the registered tests (but no setup or wrap-up) '''
-        for idx, test in enumerate(self.tests_to_perform):
-            self.print_test_status(f"Step {idx+1}.")
-            #self.print_step_message(test.module_name())
+        for idx, test in enumerate(list_of_tests):
+            self.print_test_status(f"Step {idx+start_step}.")
             self.execute_test_module(test)
 
     def execute_test_module(self, test_module):
@@ -122,7 +129,7 @@ class repo_test_suite():
         #     return False
 
         module_name = test_module.module_name()
-        result = test_module.perform_test()
+        result = test_module.perform_test(self)
         if result:
             self.print_test_status(str.format("Success:{}\n",module_name))
         else:

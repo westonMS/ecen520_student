@@ -13,9 +13,10 @@ import test_suite_520
 def main():
     ''' Main executable for script
     '''
-    tester = test_suite_520.build_test_suite_520("tx_sim",  min_err_commits = 3, max_repo_files = 20)
-    tester.add_make_test("sim_tx")
-    tester.add_make_test("sim_tx_115200_even")
+    tester = test_suite_520.build_test_suite_520("rx_sim",  min_err_commits = 3, max_repo_files = 20)
+    tester.add_make_test("sim_rx")
+    tester.add_make_test("sim_rx_115200_even")
+    tester.add_make_test("synth_rx")
     tester.run_tests()
 
 if __name__ == "__main__":
