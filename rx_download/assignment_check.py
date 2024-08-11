@@ -9,6 +9,8 @@ resources_path = pathlib.Path(__file__).resolve().parent.parent  / 'resources'
 sys.path.append( str(resources_path) )
 
 import test_suite_520
+import repo_test
+
 
 def main():
     ''' Main executable for script
@@ -20,7 +22,7 @@ def main():
     tester.add_make_test("sim_rxtop_115200_even")
     tester.add_make_test("gen_bit")
     tester.add_make_test("gen_bit_115200_even")
-    tester.add_build_test(repo_test.file_exists_test(["tx_top.bit", "tx_top_115200_even.bit",]))
+    tester.add_build_test(repo_test.file_exists_test(["rxtx_top.bit", "rxtx_top_115200_even.bit",]))
     tester.run_tests()
 
 if __name__ == "__main__":

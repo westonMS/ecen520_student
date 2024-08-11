@@ -8,7 +8,6 @@ import sys
 resources_path = pathlib.Path(__file__).resolve().parent.parent  / 'resources'
 sys.path.append( str(resources_path) )
 
-import repo_test_suite
 import repo_test
 import test_suite_520
 
