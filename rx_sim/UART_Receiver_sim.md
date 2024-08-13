@@ -41,12 +41,12 @@ Design your transmitter model as a simple, non-synthesizable model using the tes
 ## UART Receiver Module
 
 The primary goal of this assignment is to design a UART receiver module that can receive data from a UART transmitter.
-Create a UART receiver module that actively monitors the input data in signal receives a single byte of data and a parity bit.
+Create a UART receiver module that actively monitors the input "data in" signal receives a single byte of data and a parity bit.
 <!-- 
 Note that all other modules or testbenches you create for this assignment can use any Verilog or SystemVerilog constructs.
 The intent of this requirement is to give you practice using old style `reg` and `wire` data types.
 -->
-There is a ECEN 220 lab description for the [UART Receiver](http://ecen220wiki.groups.et.byu.net/labs/lab-11/) but the requirements for this receiver may be slightly different.
+There is a ECEN 320 lab description for the [UART Receiver](https://byu-cpe.github.io/ecen320/labs/lab-11/) but the requirements for this receiver may be slightly different.
 
 Create your receiver with the following ports and parameters
 
@@ -148,29 +148,14 @@ The following assignment specific items should be included in your repository:
 
 ## Submission and Grading
 
-Once you have completed the assignment and verified that everything is working correctly, follow these steps to formally submit your assignment.
 
-1. Prepare your repository
-  * Make sure all the _essential_ files needed to complete your project are committed into your repository, that no _non-essential_ files are committed to your repository, and that you have a `.gitignore` file for your assignment directory and that all intermediate files are ignored.
-  * Make sure you have a `makefile` with all the necessary make rules
-    * `sim_rx`: performs command line simulation of rx testbench
-    * `sim_rx_115200_even`: performs command line simulation of rx testbench
-2. Commit and tag your repository
-  * Make sure all of your files are committed and properly tagged (using the proper tag)
-3. Create your assignment [Readme.md](../resources/assignment_mechanics.md#assignment-submission) file
-  * Create the template file based on the instructions linked above
+The following assignment specific items should be included in your repository:
 
-### Grading
-
-I will follow these steps to grade this assignment:
-
-1. Fetch and get tag
-2. Check date of submission
-3. Simulate your design (run all make rules)
-7. Check to see if there are any files that are generated during the build process but not ignored.
-8. run `make clean` and see if there are any files that are not deleted that should be deleted.
-8. Review all your commit logs
-10. Review your Readme.md to see if it has all the requirements
-11. Review your code for compliance to the coding standards
-  * Make sure your uart receiver is using only Verilog 95 constructs
+1. Required Makefile rules:
+    * `sim_rx`:
+    * `sim_rx_115200_even`:
+    * `synth_rx`:
+2. Assignment specific Questions:
+    1. Provide a table listing the state and the encoding that the synthesis tool used for your receiver state machine.
+    1. Provide a table summarizing of the "estimated" resources your design will use. This will show up in the synthesis log file. This will include cells such as CARRY4, LUT1, LUT2, LUT3, LUT4, LUT5, LUT6, FDRE, etc.
 

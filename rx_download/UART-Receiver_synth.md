@@ -123,8 +123,6 @@ Design your top-level circuit as follows:
 
 ### Top-level testbench
 
-**HERE**
-
 Create testbench for your top-level rx/tx design by copying and modifying the [tx_top_tb.sv](../tx_download/tx_top_tb.sv) file from the tx download assignment and renaming to rxtx_top_tb.sv:
 The following adaptations should be made to the structure of this testbench:
 * Add a parameter MIN_SEGMENT_DISPLAY_US to the testbench with a default of 200. The defaults for the testbench should be a baud rate of 19200, a clock frequency of 100 MHz, and odd parity.
@@ -154,19 +152,19 @@ This testbench should be designed as follows:
     * Check to make sure there is no error
 
 Make sure your top-level design successfully passes this testbench.
-Add a makefile rule named `sim_top` that will perform this simulation from the command line.
+Add a makefile rule named `sim_rx_top` that will perform this simulation from the command line.
 
 When simulating, you can [change the top-level parameters](../resources/vivado_command_line.md#setting-parameters-for-simulation) of your testbench or module to simulate different conditions of your system.
-Create another makefile rule named `sim_top_115200_even` that will simulate your top-level design with a baud rate of 115200 and even parity.
-You will need to add the command line option to change the baud rate of your top-level design as descrbed [here](../resources/vivado_command_line.md#setting-parameters-for-simulation).
+Create another makefile rule named `sim_rx_top_115200_even` that will simulate your top-level design with a baud rate of 115200 and even parity.
+You will need to add the command line option to change the baud rate of your top-level design as described [here](../resources/vivado_command_line.md#setting-parameters-for-simulation).
 
 ### Implementation and Download
 
 At this point you are ready to implement your design, generate a bitfile and download it to your board.
-Create a new makefile rule named `gen_bit` that will generate a bitfile named `uart_19200.bit` for your top-level design with the default top-level parameters.
+Create a new makefile rule named `gen_bit` that will generate a bitfile named `rxtx_top.bit` for your top-level design with the default top-level parameters.
 Download your design to your board and use 'putty' to make sure the UART receiver is working correctly using Putty or some other terminal emulator.
 
-After demonstrating that your uart works properly, create a new makefile rule named `gen_bit_115200_even` that will generate a bitfile operating with a baud rate of 115200 and even parity and named `uart_115200.bit`.
+After demonstrating that your uart works properly, create a new makefile rule named `gen_bit_115200_even` that will generate a bitfile operating with a baud rate of 115200 and even parity and named `rxtx_top_115200_even.bit`.
 To generate such a bitfile you will need to change the top-level BAUD_RATE parameter to 115200 during the logic synthesis.
 Instructions for setting top-level parameters during synthesis can be found [here](../resources/vivado_command_line.md#setting-parameters-for-synthesis).
 Download this different bitfile with a different baud rate and make sure it is operating correctly in Putty.
@@ -190,25 +188,23 @@ set_property CONFIG_VOLTAGE 3.3 [current_design]
 
 ## Submission and Grading
 
-Once you have completed the assignment and verified that everything is working correctly, follow these steps to formally submit your assignment.
 
-1. Prepare your repository
-  * Make sure all of the _essential_ files needed to complete your project are committed into your repository
-  * Make sure you have a  `.gitignore` file for your assignment directory and that all intermediate files are ignored.
-  * Make sure you have a `makefile` with all the necessary make rules
+The following assignment specific items should be included in your repository:
+
+1. Required Makefile rules:
     * `sim_ssd`:
-    * `sim_top`: performs command line simulation of the top testbench
-    * `sim_top_115200_even`: performs command line simulation of the top testbench
+    * `synth_ssd`:
+    * `sim_rx_top`: performs command line simulation of the top testbench
+    * `sim_rx_top_115200_even`: performs command line simulation of the top testbench
     * `gen_bit`: Generates a bitstream for your top-level design
     * `gen_bit_115200_even`: Generates a bitstream for your top-level design
-2. Commit and tag your repository
-  * Make sure all of your files are committed and properly tagged (using the proper tag)
-3. Create your assignment [Readme.md](../resources/assignment_mechanics.md#assignment-submission) file
-  * Create the template file based on the instructions linked above
-  * Add the following items for the assignment-specific section of the readme:
-    1. **Resoures**: Provide a summary of the number of resources your design uses (see the output from the utilization report). Specifically, indicate the number of `Slice LUTs`, `Slice Registers`, and `Bonded IOB` resources your design uses.
-    2. **Warnings**: You should not have _any_ warnings in your project as described in the assignment instructions above. Make sure you don't have any warnings and state this in your readme.
-    3. **Timing**: Determine the "Worst Negative Slack" (or WNS). This is found in the timing report and indicates how much timing you slack you have with the current clocking.
-
-
+2. Assignment specific Questions:
+    1. Provide a table summarizing the resources your design uses from the implementation utilization report.
+    1. Review the timing report and summarize the following:
+       * Determine the "Worst Negative Slack" (or WNS). 
+       * summarize the `no_input_delay` and `no_output_delay` section of the report.
+       * How many total endpoints are there on your clock signal?
+       * Find the first net in the `Max Delay Paths` section and indiicate the source and destination of this maximum path.
     1. Indicate how many times you had to synthesize and download your bitstream before your circuit worked.
+    1. Review the timing report and summarize the `no_input_delay` and `no_output_delay` section of the report.
+

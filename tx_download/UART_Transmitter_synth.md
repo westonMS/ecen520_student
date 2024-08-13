@@ -322,6 +322,6 @@ The following assignment specific items should be included in your repository:
     * `gen_tx_bit_115200_even`: Generate a bitfile for your transmitter with a baud rate of 115200 and even parity
 2. Assignment specific Questions:
     1. The synthesis log will summarize any state machines that it created. Provide a table listing the state and the encoding that the synthesis tool used for your transmitter state machine.
-    1. Provide a table summarizing of the resources your design uses. Use the template table below. You can get this information from the implementation utilization report.
+    1. Provide a table summarizing the resources your design uses. Use the template table below. You can get this information from the implementation utilization report.
     1. Determine the "Worst Negative Slack" (or WNS). This is found in the timing report and indicates how much timing you slack you have with the current clocking (we will discuss this later in the semester).
     1. Indicate how many times you had to synthesize and download your bitstream before your circuit worked.
