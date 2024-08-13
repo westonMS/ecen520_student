@@ -115,7 +115,7 @@ Create a controller with the following top-level ports and parameters:
 | SCLK_FREQUENCY  | 500_000 | Specify the frequency of the SCLK |
 
 
-** Glitches! (need to latch data going out!) **
+**Glitches!** (need to latch data going out!)
 
 <!--
 **Note:** We have not talked about ASMD diagrams yet so you can ignore the instructions for creating ASMD diagrams.
@@ -149,9 +149,11 @@ Design your testbench to do the following:
     * Check to make sure the character you sent is the character you received. Print a message that you correctly received the character you sent or print that an error occurred.
   * Send at least 5 transactions that are multi-byte transfers
     * Make sure that the data you send is the data that is received
-  * End your simulation with `$finish`
+  * End your simulation with `$stop`
 
-Create a makefile rule named `sim_spi_cntrl` that will run your testbench.
+Create a makefile rule named `sim_spi_cntrl` that will run your testbench with the default parameters.
+
+Change the spi_clock rate?
 
 <!--
 Use Verilog 2001/SystemVerilog:
@@ -255,6 +257,9 @@ Resources:
 ## Submission and Grading
 
 1. Prepare your repository
+    * `sim_spi_cntrl`
+    * `synth_spi_cntrl`
+
   * Make sure all of the _essential_ files needed to complete your project are committed into your repository
   * Make sure you have a  `.gitignore` file for your assignment directory and that all intermediate files are ignored.
   * Make sure you have a `makefile` with all the necessary make rules
