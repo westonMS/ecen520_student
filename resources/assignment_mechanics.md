@@ -1,6 +1,6 @@
 # ECEN 520 Assignment Mechanics
 
-This page describes how you are to submit your assignments for the class. 
+This page describes the mechanics of completing assignments including how to submit your assignments for the class. 
 
 ## GitHub
 
@@ -16,6 +16,21 @@ There are many other tutorials online you can follow to sharpen your git/GitHub 
 
 You will need to create a custom repository for this class that includes startercode to help you get started.
 The instructions for creating this repository are described in the [Setting up your GitHub Repository](#setting-up-your-github-repository) section below.
+
+## Generative AI & GPTs
+
+Generative AI tools like chatbots and Co-Pilot can be helpful in completing assignments.
+You are welcome to use co-pilot within VSCode to help you write your HDL code but you are strongly encouraged to type the code in yourself until you are comfortable with the syntax and structure of the code.
+You will be responsible for understanding the syntax and structure of SystemVerilog (and the other languages we use in this class) and you will be tested on this knowledge in the exams.
+If you rely exclusively on Co-Pilot to write your code you will likely not understand the syntax as well as you should for exams and for designing on your own.
+
+I have created a custom chatbot for this class that is accessible at the following URL: [https://ecen-digital-tutor.byu.edu/](https://ecen-digital-tutor.byu.edu/).
+This chatbot is based on OpenAI's 4.0 large language model but has been modified to provide specific help in completing these lab assignments.
+Specifically, this chatbot will be trained with improved answers to questions about the assignments and has access to the reference manuals for the tools we use in this class.
+This chatbot will be constantly updated and trained throughout the semester to improve the learning environment for the class.
+
+For this class I would like you to use this chatbot to help you with your assignments and **NOT** to use other chatbots to complete the assignments.
+If you feel that the class chatbot is insufficient, please contact me to help me improve it.
 
 ## Assignment Reports
 

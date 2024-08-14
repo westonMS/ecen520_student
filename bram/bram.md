@@ -17,15 +17,16 @@ Futgure: if they hit enter, make sure both CR/LF are sent back
 In this assignment you will practice instancing BRAMs and interface them to your UART. 
 You will use your BRAM to buffer data received from the UART receiver and to send over the transmitter. 
 Two different BRAMs will be used in this assignment. 
-You will need to interface these two BRAMs to your UART as described below.
 
 <!--
 You can create this design in a single HDL file if you like.
 -->
 
-**Make a module** Make one module that does the fight song and a different module that does the replay buffer.
+## BRAM Playback
 
 ## Fight Song BRAM
+
+**Make a module** Make one module that does the fight song and a different module that does the replay buffer.
 
 Instance a single BRAM as a device primitive in your HDL (do not 'infer' the BRAM with your RTL). 
 This BRAM should be organized as 8bit x 4096 (i.e., 4096 8-bit ASCII characters). 
