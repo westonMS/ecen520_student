@@ -89,7 +89,6 @@ Create a top-level design that uses the following top-level ports:
 | LED16_B | Output | 1 | Used for TX busy signal |
 | LED17_R | Output | 1 | Used for RX busy signal |
 | LED17_G | Output | 1 | Used for RX error signal |
-| LED17_G | Output | 1 | Used for RX error signal |
 | AN | [7:0] | Output | Anode signals for the seven segment display |
 | CA, CB, CC, CD, CE, CF, CG | [6:0] | Output | Seven segment display cathode signals |
 | DP | Output | 1 | Seven segment display digit point signal |
@@ -110,14 +109,14 @@ Design your top-level circuit as follows:
   * Attach the lower 8 switches on the board to the lower 8 LEDs. This way the user can more easily see the value of the switches with the LEDs
   * Attach the tx busy signal to the LED16_B signal to provide a blue LED indicator when the transmitter is busy
 * Instance your receiver
-  * Add a two flip-flop synchronizer between the RX input signal (`UART_TXD_IN`) and the intput rx signal to your receiver. This is necessary to avoid metastibilty and properly synchronize the asynchronous input.
-  * Hook up the upper 8 LEDs to the data recevied by your receiver. These LEDs should display the last value received by the receiver. You should only update these LEDs when the 'data_strobe' indicates a new character has been received
+  * Add a two flip-flop synchronizer between the RX input signal (`UART_TXD_IN`) and the input rx signal to your receiver. This is necessary to avoid metastibilty and properly synchronize the asynchronous input.
+  * Hook up the upper 8 LEDs to the data received by your receiver. These LEDs should display the last value received by the receiver. You should only update these LEDs when the 'data_strobe' indicates a new character has been received
   * Attach the rx busy signal to the LED17_R signal to provide a red LED indicator when the receiver is busy
   * Attach the rx error signal to the LED17_G signal to provide a green LED indicator when the receiver has an error
 * Create four 8-bit registers that hold the last four values received by your receiver
-  * When the data_strobe occurs, load the value recieved by the recevier into the first register and shift the values in the other registers.
+  * When the data_strobe occurs, load the value received by the receiver into the first register and shift the values in the other registers.
 * Instance your seven segment display controller as described below
-  * Drive the data to display with the four 8-bit registers described above. The most recent value receibed should be driven on the right two digits, the second value received should be driven on the left two digits, and so on.
+  * Drive the data to display with the four 8-bit registers described above. The most recent value received should be driven on the right two digits, the second value received should be driven on the left two digits, and so on.
   * Drive all zeros on the digit point input and tie the "blank" signal to zero. 
   * Hook up the seven segment display outputs to the top-level outputs of the design (i.e., AN, CA, CB, CC, CD, CE, CF, CG, DP)
 
