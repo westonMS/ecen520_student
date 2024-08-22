@@ -1,5 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
-// seven_segment.sv
+// seven_segment_check.sv
+//
+// This simulation model is used to check the behavior of the seven segment display
 //////////////////////////////////////////////////////////////////////////////////
 `timescale 1ns / 1ps
 
@@ -13,8 +15,8 @@ module seven_segment_check(clk, rst, segments, dp, anode,
     output logic new_value;
     output logic [31:0] output_display_val;
 
-    parameter int CLK_FREQUENCY = 100_000_000;   // 100 MHz
-    parameter int MIN_SEGMENT_DISPLAY_US = 10_000;
+    parameter int CLK_FREQUENCY = 100_000_000;      // 100 MHz
+    parameter int MIN_SEGMENT_DISPLAY_US = 10_000;  // 10 ms
     parameter int VERBOSE = 1;
     parameter int WARN_ON_SIMULTANEOUS_ANODES = 1;
     localparam int MIN_SEGMENT_CLOCKS = CLK_FREQUENCY / 1_000_000 * MIN_SEGMENT_DISPLAY_US;
@@ -78,12 +80,11 @@ module seven_segment_check(clk, rst, segments, dp, anode,
         byte digit_point[8];
         const byte SPACE = 8'h20;
         //const byte SPACE = 8'h2E;
-        const byte DASH = 8'h2D;
-        const byte BAR = 8'h7C;
-        const byte DOT = 8'h2E;
-        const byte UNDERSCORE = 8'h5F;
-        automatic integer horizontal_segment_indecies[] = '{6,3,0};
-        automatic integer vertical_segment_indecies[] = '{5,4,2,1};
+        const byte DASH = 8'h2D;       // -
+        const byte BAR = 8'h7C;        // |
+        const byte DOT = 8'h2E;        // .
+        const byte UNDERSCORE = 8'h5F; // _
+        // lines of character data to build display
         automatic string line1, line2,line3,line4,line5 = "";
         begin
             // Iterate over each digit to convert the segment values to its corresponding character
@@ -96,7 +97,7 @@ module seven_segment_check(clk, rst, segments, dp, anode,
                 else segment_chars[i][3] = SPACE;
                 if (display_segments[i][6]==0) segment_chars[i][6] = UNDERSCORE;
                 else segment_chars[i][6] = SPACE;
-                // Vertical charactesra are segments 1,2,4,5
+                // Vertical characters are segments 1,2,4,5
                 if (display_segments[i][1]==0) segment_chars[i][1] = BAR;
                 else segment_chars[i][1] = SPACE;
                 if (display_segments[i][2]==0) segment_chars[i][2] = BAR;
@@ -108,8 +109,10 @@ module seven_segment_check(clk, rst, segments, dp, anode,
                 // for (int j = 0; j < 7; j = j + 1)
                 //     $display(" segment %0d=%c", j, segment_chars[i][j]);
                 // Determine the digit point
-                if (display_dp[i] == 1) digit_point[i] = DOT;
-                else digit_point[i] = SPACE;
+                if (display_dp[i] == 1) 
+                    digit_point[i] = DOT;
+                else 
+                    digit_point[i] = SPACE;
             end
             // Print the segments
             // Line 1 (top line) : S6SSS (underscores)
@@ -137,6 +140,7 @@ module seven_segment_check(clk, rst, segments, dp, anode,
     logic [7:0] anode_d; // One clock cycle delay of anode (used for detecting anode changes)
     logic [7:0] annode_collect; // Collect the anodes that are being displayed (to see if all have been displayed)
     integer anode_count = 0; // Count the number of clocks that a single anode is displayed
+    integer last_anode_count = 0;
     //logic new_value;
     logic [7:0] new_digit;
     assign new_digit = (anode ^ anode_d) & anode; // combinatinoal
@@ -158,6 +162,7 @@ module seven_segment_check(clk, rst, segments, dp, anode,
                 $display("[%0tns] Warning: Invalid number of segment clocks: %0d expecting %0d %h %h", $time/1000,
                     anode_count, MIN_SEGMENT_CLOCKS,anode,anode_d);
             end
+            last_anode_count <= anode_count; // Save the last anode count for reportings
             anode_count <= 0;
             annode_collect <= annode_collect | new_digit;
             if ((annode_collect | new_digit) == 8'hff) begin
@@ -165,6 +170,7 @@ module seven_segment_check(clk, rst, segments, dp, anode,
                 annode_collect <= 0;
                 $display("[%0tns] New value:",$time/1000);
                 print_segments();
+                $display("Anode assert clocks %0d:",last_anode_count+1);
             end
         end
 
