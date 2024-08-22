@@ -1,11 +1,6 @@
 #!/usr/bin/python3
 
-import pathlib
 import argparse
-import shutil
-import subprocess
-import sys
-import re
 import os
 import git
 
@@ -116,7 +111,9 @@ class get_err_git_commits(repo_test.repo_test):
                 chk_commits.append(commit_message)
                 print(commit_message)
         if len(chk_commits) >= self.min_msgs:
-            return True
+            # return True
+            return self.success_result()
         else:
             repo_test_suite.print_error(f"Insufficient number of error commits: found {len(chk_commits)} but expecting {self.min_msgs}")
-            return False
+            # return False
+            return self.warning_result()

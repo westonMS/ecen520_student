@@ -1,13 +1,9 @@
 #!/usr/bin/python3
 
 import pathlib
-import argparse
-import shutil
-import subprocess
-import sys
-import re
 import os
 import git
+from repo_test import result_type
 
 class TermColor:
     """ Terminal codes for printing in color """
@@ -74,6 +70,8 @@ class repo_test_suite():
         # Colors
         self.test_color = TermColor.YELLOW
         self.error_color = TermColor.RED
+        # Test result dictionary
+        self.test_results = {}
 
     def add_test_module(self, test_module):
         ''' Add a test module. '''
@@ -113,10 +111,33 @@ class repo_test_suite():
 
     def print_test_end_message(self):
         self.print_test_status(f"Test completed")
+        warnings = []
+        errors = []
+        success = []
+        for test in self.test_results.keys():
+            result = self.test_results[test]
+            if result.result == result_type.SUCCESS:
+                success.append(result)
+            elif result.result == result_type.WARNING:
+                warnings.append(result)
+            else:
+                errors.append(result)
+        if len(warnings) == 0 and len(errors) == 0:
+            self.print_test_status(f"  No errors or warnings")
+        else:
+            if len(warnings) != 0:
+                self.print_error(f" {len(warnings)} Warnings")
+                for warning in warnings:
+                    self.print_error(f"  {warning.test.module_name()}")
+            if len(errors) != 0:
+                self.print_error(f" {len(errors)} Errors")
+                for error in errors:
+                    self.print_error(f"  {error.test.module_name()}")
+
 
     def iterate_through_tests(self, list_of_tests, start_step = 1):
-        ''' Run all the registered tests (but no setup or wrap-up) '''
-        for idx, test in enumerate(list_of_tests):
+        ''' Run list of tests '''
+        for idx, test in enumerate(list_of_tests):# (but no setup or wrap-up):
             self.print_test_status(f"Step {idx+start_step}. {test.module_name()}")
             self.execute_test_module(test)
 
@@ -130,8 +151,11 @@ class repo_test_suite():
 
         module_name = test_module.module_name()
         result = test_module.perform_test(self)
-        if result:
+        self.test_results[test_module] = result
+        if result.result == result_type.SUCCESS:
             self.print_test_status(str.format("Success:{}\n",module_name))
+        elif result.result == result_type.WARNING:
+            self.print_error(str.format("Warning:{}\n",module_name))
         else:
             self.print_error(str.format("Failed:{}\n",module_name))
         return result

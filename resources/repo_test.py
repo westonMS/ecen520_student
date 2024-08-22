@@ -7,17 +7,25 @@ Several generic test classes are included that could be used in any
 type of repository.
 '''
 
-# Manages file paths
-import pathlib
-# Shell utilities for copying, 
-import shutil
 import subprocess
 import os
 import sys
 from enum import Enum
 from git import Repo
-import re
 
+class result_type(Enum):
+    SUCCESS = 1
+    WARNING = 2
+    ERROR = 3
+
+class repo_test_result():
+    """ Class for indicating the result of a test
+    """
+
+    def __init__(self, test, result = result_type.SUCCESS, msg = None):
+        self.test = test
+        self.result = result
+        self.msg = msg
 
 class repo_test():
     """ Class for performing a test on files within a repository.
@@ -27,11 +35,8 @@ class repo_test():
     This is intended as a super class for custom test modules.
     """
 
-    #def __init__(self, repo_test_suite, abort_on_error=True, process_output_filename = None):
     def __init__(self, abort_on_error=True, process_output_filename = None):
         """ Initialize the test module with a repo object """
-        #self.rts = repo_test_suite
-        #self.rts.add_test_module(self)
         self.abort_on_error = abort_on_error
         self.process_output_filename = process_output_filename
 
@@ -43,6 +48,15 @@ class repo_test():
         """ This function should be overridden by a subclass. It performs the test using
         the repo_test_suite object to obtain test-specific information. """ 
         return False
+    
+    def success_result(self, msg=None):
+        return repo_test_result(self, result_type.SUCCESS, msg)
+
+    def warning_result(self, msg=None):
+        return repo_test_result(self, result_type.WARNING, msg)
+
+    def error_result(self, msg=None):
+        return repo_test_result(self, result_type.ERROR, msg)
 
     def execute_command(self, repo_test_suite, proc_cmd, process_output_filename = None ):
         """ Completes a sub-process command. and print to a file and stdout.
@@ -87,7 +101,7 @@ class repo_test():
             if fp:
                 fp.write(line)
                 fp.flush()
-        # Wait until process is done
+        # Wait until process is donetest
         proc.communicate()
         return proc.returncode
 
@@ -111,7 +125,10 @@ class file_exists_test(repo_test):
                 repo_test_suite.print_error(f'File does not exist: {file_path}')
                 return_val = False
             repo_test_suite.print(f'File exists: {file_path}')
-        return return_val
+        #return return_val
+        if return_val:
+            return self.success_result()
+        return self.error_result()
 
 class make_test(repo_test):
     ''' Performs makefile rules
@@ -126,14 +143,18 @@ class make_test(repo_test):
         self.make_rule = make_rule
 
     def module_name(self):
-        return "Makefile"
+        return f"Makefile: 'make {self.make_rule}'"
 
     def perform_test(self, repo_test_suite):
         cmd = ["make", self.make_rule]
         return_val = self.execute_command(repo_test_suite, cmd)
+        # if return_val != 0:
+        #     return False
+        # return True
         if return_val != 0:
-            return False
-        return True
+            return self.error_result()
+        return self.success_result()
+
 
 class check_for_untracked_files(repo_test):
     ''' This tests the repo for any untracked files. Returns true if there are no untracked files.
@@ -155,9 +176,11 @@ class check_for_untracked_files(repo_test):
             files = untracked_files.splitlines()
             for file in files:
                 repo_test_suite.print_error(f'  {file}')
-            return False
+            # return False
+            return self.warning_result()
         repo_test_suite.print(f'No untracked files found in repository')
-        return True
+        # return True
+        return self.success_result()
 
 class check_for_max_repo_files(repo_test):
     ''' 
@@ -176,8 +199,10 @@ class check_for_max_repo_files(repo_test):
         repo_test_suite.print(f"{n_tracked_files} Tracked git files in {repo_test_suite.relative_repo_path}")
         if n_tracked_files > self.max_dir_files:
             repo_test_suite.print_error(f"  Too many tracked files")
-            return False
-        return True
+            # return False
+            return self.warning_result()
+        # return True
+        return self.success_result()
 
 class check_for_ignored_files(repo_test):
     ''' Checks to see if there are any ignored files in the repo directory.
@@ -203,11 +228,15 @@ class check_for_ignored_files(repo_test):
             files = ignored_files.splitlines()
             for file in files:
                 repo_test_suite.print_error(f'  {file}')
-            return False
+            # return False
+            return self.warning_result()
         repo_test_suite.print(f'No ignored files found in repository')
-        return True
+        # return True
+        return self.success_result()
 
 class check_for_uncommitted_files(repo_test):
+    ''' Checks for uncommitted files in the repo directory.
+    '''
 
     def __init__(self):
         '''  '''
@@ -223,9 +252,11 @@ class check_for_uncommitted_files(repo_test):
             repo_test_suite.print_error(f'Uncommitted files found in repository:')
             for file in modified_files:
                 repo_test_suite.print_error(f'  {file}')
-            return False
+            # return False
+            return self.warning_result()
         repo_test_suite.print(f'No uncommitted files found in repository')
-        return True
+        # return True
+        return self.success_result()
 
 class check_number_of_files(repo_test):
     ''' Counts the number of files in the repo directory.
@@ -246,9 +277,11 @@ class check_number_of_files(repo_test):
             files = uncommitted_files.splitlines()
             for file in files:
                 repo_test_suite.print_error(f'  {file}')
-            return False
+            # return False
+            return self.warning_result()
         repo_test_suite.print(f'No uncommitted files found in repository')
-        return True
+        # return True
+        return self.success_result()
 
 class list_git_commits(repo_test):
     ''' Prints the commits of the given directory in the repo.
@@ -272,4 +305,5 @@ class list_git_commits(repo_test):
             commit_message = commit.message.strip()
             commit_date = commit.committed_datetime.strftime('%Y-%m-%d %H:%M:%S')
             print(f"{commit_hash} - {commit_date} - {commit_message}")
-        return True
+        # return True
+        return self.success_result()
