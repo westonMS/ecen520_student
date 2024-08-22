@@ -23,31 +23,5 @@ def main():
     tester.add_build_test(repo_test.file_exists_test(["tx_top.bit", "tx_top_115200_even.bit",]))
     tester.run_tests()
 
-    """
-    parser = test_suite_520.test_args_520("tx_download_check assignment tester")
-    args = parser.parse_args()
-    checker = repo_test_suite.create_from_path()
-
-    repo_test.list_git_commits(checker)
-    test_suite_520.get_err_git_commits(checker,3)
-    repo_test.check_for_max_repo_files(checker,20)
-    repo_test.check_for_uncommitted_files(checker)
-    if not args.nobuild:
-        repo_test.make_test(checker,"sim_debouncer")
-        repo_test.make_test(checker,"sim_tx_top")
-        repo_test.make_test(checker,"sim_tx_top_115200_even")
-        # TODO: need to make files for different implementation steps have different names
-        repo_test.make_test(checker,"gen_tx_bit")
-        repo_test.make_test(checker,"gen_tx_bit_115200_even")
-        repo_test.file_exists_test(checker,["tx_top.bit", "tx_top_115200_even.bit",] )
-        repo_test.check_for_untracked_files(checker)
-    if not args.noclean:
-        repo_test.make_test(checker,"clean")
-        repo_test.check_for_ignored_files(checker)
-
-    # Run tests
-    checker.run_tests()
-    """
-
 if __name__ == "__main__":
     main()

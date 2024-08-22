@@ -48,7 +48,7 @@ Design your debouncer with the following requirements:
 * Create a counter within your module to count the `DEBOUNCE_CLKS` before transitioning the output signal. You can use the `$clog2` function to determine how many bits are needed for the counter (i.e., `$clog2(DEBOUNCE_CLKS)`)
 
 When you have created your debouncer, simulate your debouncer with the testbench `debouncer_tb.sv` until your debouncer passes all tests.
-Create a makefile rule named `sim_debouncer` that will perform this simulation from the command line using the default parameters.
+Create a makefile rule named `sim_debouncer` that will perform this simulation from the command line using the default module parameters.
 
 ### Create a top-level FPGA design
 
@@ -70,7 +70,7 @@ Create a top-level module named `tx_top` with the following ports and parameters
 | CLK_FREQUENCY  | 100_000_000 | Specify the clock frequency |
 | BAUD_RATE | integer | 19_200 | Baud rate of the design |
 | PARITY | integer | 1 | Parity type (0 = Even, 1 = Odd) |
-| DEBOUNCE_DELAY_US | integer | 10_000 | Specifies the minimum debounce delay in micro seconds|
+| DEBOUNCE_DELAY_US | integer | 10_000 | Specifies the minimum debounce delay in micro seconds (default 10 ms) |
 
 Create your top-level design as follows:
   * Instance your debouncer module and hook up the `BTNC` button to the input of the debouncer. In addition, create a "one-shot" circuit on the output of the debouncer. The purpose of the one-shot circuit is to generate a single pulse when the button is pressed and to ignore any additional presses until the pulse has completed. If you do not add a one-shot circuit then the button press will be interpreted as multiple presses and multiple characters will be transmitted over the UART. The output of the debouncer plus one-shot circuits will go into the `send` input of your transmitter module.
@@ -88,6 +88,7 @@ This testbench also uses the [rx_model.sv](../tx_sim/rx_model.sv) simulation mod
 Make sure your top-level design successfully passes this testbench.
 Add a makefile rule named `sim_tx_top` that will perform this simulation from the command line using the default parameters.
 In addition, make a second makefile rule named `sim_tx_top_115200_even` that performs this simulation with the parameters changed as follows: baud rate = 115200 and even parity.
+Note that the testbench has significnatly shortened the debounce delay time to shorten the simulation.
 Do not proceed to the next step until you have successfully simulated your top-level design for both baud rates and parities.
 
 ## Design Implementation
@@ -114,124 +115,30 @@ Make sure you commit your `.xdc` file to your repository.
 The following [xdc tutorial](https://byu-cpe.github.io/ecen320/tutorials/lab_03/05_making_an_xdc_file/) can help you complete an xdc file and add the xdc file to your project.
 -->
 
-### Design Synthesis
+### Design Implementation Tutorial
 
-The next step in the implementation process is to synthesize your design with the Xilinx Vivado synthesis tool.
-Although you are welcome to run the synthesis tool in the GUI mode, you will need to run the tool in command line mode for submission of this assignment.
-You are encouraged to use the command line mode during development to make sure you are familiar with the process.
+You will need to perform the following steps on your design within the FPGA design implementation tools:
+1. Synthesis
+2. Placement
+3. Routing
+4. Report generation
+5. Checkpoint generation
+6. Bitstream generation
 
-Start by running vivado in interactive mode as follows:
+For this class, we will be using the command line version of the Vivado tools.
+The [following tutorial](../resources/vivado_implementation.md) will guide you through the steps of implementing your design with the command line tools.
+
+For this assignment you will need to create two different bitfiles:
+* `tx_top.bit`: This uses the default parameters of your top-level design (i.e., default clock rate, 19_200 baud rate, odd parity, and debounce delay of 10 ms)
+* `tx_top_115200_even.bit`: This bitfile should be generated with several changes to the top-level default parameters. BAUD_RATE = 115_200 and PARITY = 0.
+You will need to have custom vivado tcl implementation scripts to generate these two files.
+
+Create a makefile rule `gen_tx_bit` to generate the `tx_top.bit` bitfile and a makefile rule `gen_tx_bit_115200_even` to generate the `tx_top_115200_even.bit` bitfile.
+The following example demonstrates such a rule.
 ```
-vivado -mode batch
+gen_tx_bit:
+  vivado -mode batch -source tx_top_synth.tcl
 ```
-You will have access to the Vivado tools in batch mode allowing you to execute individual tcl commands to perform the synthesis and implementation steps.
-The discussion below will describe these commands for interactive use but you will eventually run these as a .tcl synthesis script.
-You will need to execute several commands to complete the synthesis process:
-1. Load the HDL files<br>
-The first step involves compiling your HDL files into a representation that can be synthesized.
-Although your files have been previously compiled for simulation in QuestaSim, they must be compiled again within the Vivado tools.
-You can load the files using the [`read_verilog`](../resources/vivado_command_line.md#read_verilog) command with the `-sv` option.
-The following example demonstrates how to compile two files in the Vivado tools:
-```
-read_verilog -sv tx.sv
-read_verilog -sv tx_top.sv
-```
-Note that since we are not simulating in this process, you do not need to compile the testbench files - these files are only used for simulation in QuestaSim.
-
-2. Load the xdc files<br>
-The next step involves loading the XDC file that contains the pin constraints for your design.
-Your design will not be able to be synthesized and implemented without these constraints.
-This is done using the [`read_xdc`](../resources/vivado_command_line.md#read_xdc) command.
-The following command demonstrates how to load the .xdc file:
-```
-read_xdc top.xdc
-```
-
-3. Run the synthesis command
-
-The final step for synthesis is to run perform the actual synthesis using the [`synth_design`](../resources/vivado_command_line.md#synth_design) command.
-This command requires at least two options: the top-level module name and the part number of the FPGA you are targeting.
-The following example demonstrates how to run the synthesis command for a top-level module named `top` and the part we are using on the NexysDDR board:
-```synth_design -top top -part xc7a100tcsg324-1
-```
-
-Sometimes you will need to change the top-level parameters of your design as part of the synthesis step.
-This can be done using the `-generic` option.
-For example, the option `-generic {BAUD_RATE=115200}` would change the top-level BAUD_RATE of your design if you wanted to synthesize a design with a different baud rate.
-
-This command may take some time to execute and will produce a lot of text output.
-It is possible that the synthesis will fail due to errors in your design.
-Even though your design simulates correctly, you may have not coded your HDL properly to result in a successful synthesis.
-You may spend a fair amount of time iterating through your design when you have synthesis errors.
-If you resolve synthesis errors, you should resimulate your design to make sure it is still working properly.
-
-The synthesis process is very important and there is a lot of important information within the synthesis logs generated by Vivado.
-You should get in the habit of reviewing this log to learn more about your implemented design.
-In addition, you should look for any warnings and resolve all warnings before proceeding to implementation.
-The synthesis tool may generate a number of warnings and you may need to downgrade some warning messages to info messages to get a clean synthesis.
-This [summary](../resources/vivado_command_line.md#adjusting-message-severity-levels) describes how to add lines to your .xdc file to adjust the severity of messages generated by the synthesis tool.
-
-<!--
-Synthesize your design and create a bit file [see the tutorials for synthesis](https://byu-cpe.github.io/ecen320/tutorials/lab_03/07_synthesis/),
-[implementation](https://byu-cpe.github.io/ecen320/tutorials/lab_03/08_implementation/), and
-[bitgen](https://byu-cpe.github.io/ecen320/tutorials/lab_03/09_bitgen/).
--->
-
-### Implementation and Bitstream generation
-
-After generating a successful synthesis, the next step is to complete the implementation process.
-This involves optimizing your design, placing your design into specific sites within the FPGA, performing routing, and generating a configuration bitstream.
-These steps are performed by using the following Vivado commands:
-
-```opt_design
-place_design
-route_design
-write_bitstream -force tx.bit
-```
-
-The final step requires an argument with the filename of the bitstream you want to generate.
-Like the synthesis step, there may be errors in this process that will require you to go back and make changes to your HDL code.
-
-### Implementation Checkpoint and Logs
-
-The state of your implemented design is held within the Vivado tool and this state is lost if you quit the tool.
-It is often important to save the state of your implemented design so you can return to it later.
-You can save the state of your design by using the [`write_checkpoint`](../resources/vivado_command_line.md#create-checkpoint) command.
-You should generate a checkpoint file for every design you implement.
-
-```write_checkpoint -force checkpoint_impl.dcp
-```
-
-Later, you can load the state of your design by using the [`read_checkpoint`](../resources/vivado_command_line.md#read-checkpoint) command.
-```read_checkpoint
-```
-
-If you have successfully completed the implementation process, you will have a bitstream file that can be downloaded to the FPGA board.
-Before downloading the bitstream, it is important to generate a number of reports to help you understand your design.
-These reports will be required in all of your implementation assignments.
-* **io**: A summary of the I/O ports used in your design
-* **timing_summary**: A summary of your design timing, the timing constraints and violations in your design. We will be carefully reviewing this report in future assignments'
-* **utilization**: A summary of the resources used in your design
-* **drc**: A summary of the "design rule checks" for your design
-
-Execute each of the following commands after implementation to generate these reports:
-```report_io -file io.rpt
-report_timing_summary -max_paths 10 -report_unconstrained -file timing_summary_routed.rpt -warn_on_violation
-report_utilization -file utilization_impl.rpt
-report_drc -file drc_routed.rpt
-```
-
-
-### Build Script
-
-It is tedious to type all of these implementation commands in by hand every time you want to implement.
-You can create a `.tcl` script that contains all of these commands and run this script to implement your design.
-For this assignment, create a build `.tcl` script that contains all of the commands needed to synthesize and implement your design.
-You can run your implementation script as a single command from the command line as follows:
-`vivado -mode batch -source tx_synth.tcl -log tx_implement.log`
-
-
-
 
 
 ## Design Download
@@ -246,17 +153,6 @@ You may want to view an [ASCII Table](https://commons.wikimedia.org/wiki/File:AS
 (didn't work for me)
 screen /dev/ttyUSB2 115200,cs8,parenb,-parodd,-cstopb
 -->
-You will need to provide a makefile rule named `gen_tx_bit` that generates a bitfile with the name `tx.bit` by running the makefile.
-The following example demonstrates such a rule.
-```
-gen_tx_bit:
-  vivado -mode batch -source tx_synth.tcl
-```
-You will need to have a `.tcl` script that includes all the tcl commands needed to perform this step.
-See the [instructions](../resources/vivado_command_line.md#synthesis-and-implementation) for details on what needs to be included in this script (also, make sure you commit this script to your repository).
-Make sure you can properly create a bitstream using this makefile rule and that you test this bitfile on your own board.
-
-You will also need a rule named `gen_tx_bit_115200_even` that generates a different bitfile with the name `tx_115200_even.bit` that uses a baud rate of 115200 and even parity.
 
 
 <!--
