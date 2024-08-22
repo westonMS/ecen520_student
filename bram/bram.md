@@ -92,22 +92,24 @@ Your BRAM will act like a FIFO: characters received from the UART are placed in 
 
 ## Testbench
 
-Create a top-level testbench that instantiates your design and simulates the behavior of both button presses.
-Create a makefile rule `sim_top` that performs this simulation from the commandline.
-Create a makefile rule `gen_bit` that generates a bitstream for your top-level design.
+Create a top-level testbench that instantiates your design and simulates the behavior of all three ways to send data over the UART.
+
+* Hook up my UART receiver model that prints out the characters it receives.
+* Instance a second copy of your transmitter in the testbench so that you can provide data for the receiver. Control this by your testbench.
+* Hook up the seven segment display checker (even though we don't really care about it much)
+
+* Initialize and reset your design
+* Have your testbench transmitter send the characters "Hello World" to your receiver
+* Send two characters over the transmitter by pressing BTNC
+* Press buttonL to send the fight song. Send the entire sequence to make sure it stops (this may take a while)
+* Have your testbench transmitter send the characters "Good Bye" to your receiver
+* Press button R to send the data in your BRAM buffer out the transmitter
+
+
+Create a makefile rule `sim_top` that performs this simulation from the command line. Genrics?
+Create a makefile rule `gen_bit` that generates a bitstream for your top-level design. Generics?
 
 
 ## Submission
 
-
-1. Prepare your repository
-  * Make sure all of the _essential_ files needed to complete your project are committed into your repository
-  * Make sure you have a  `.gitignore` file for your assignment directory and that all intermediate files are ignored.
-  * Make sure you have a `makefile` with all the necessary make rules
-    * `sim_top`: performs command line simulation of the top testbench
-    * `gen_bit`: Generates a bitstream for your top-level design
-2. Commit and tag your repository
-  * Make sure all of your files are committed and properly tagged (using the proper tag)
-3. Create your assignment [Readme.md](../resources/assignment_mechanics.md#assignment-submission) file
-  * There are no assignment specific requriements for the readme
-
+Add detailed timing analysis to your README.md file.
