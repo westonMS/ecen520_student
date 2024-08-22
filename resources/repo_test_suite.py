@@ -117,7 +117,7 @@ class repo_test_suite():
     def iterate_through_tests(self, list_of_tests, start_step = 1):
         ''' Run all the registered tests (but no setup or wrap-up) '''
         for idx, test in enumerate(list_of_tests):
-            self.print_test_status(f"Step {idx+start_step}.")
+            self.print_test_status(f"Step {idx+start_step}. {test.module_name()}")
             self.execute_test_module(test)
 
     def execute_test_module(self, test_module):
