@@ -9,54 +9,45 @@ This repository will supplement Learning Suite by providing lecture slides, lect
 
 | Date | Lecture |
 | --- | --- |
-<!-- Week 1 -->
+| **Week 1** | |
 | 9/4/2024 | [Class Overview](./lectures/class_overview.md) |
 | 9/6/2024 | [SystemVerilog Review](./lectures/system_verilog_overview.md) |
-<!-- Week 2 -->
+| **Week 2** | |
 | 9/9/2024 | [SystemVerilog Sequential Logic Design](./system_verilog_sequential.md) |
 | 9/11/2024 | [FSM Design](./fsm_design.md) |
 | 9/13/2024 | [FSM Glitches](./glitches.md) |
-<!-- Week 3 -->
-<!-- HERE -->
+| **Week 3** | |
 | 9/16/2024 | [RTL Design using ASM Diagrams](./rtl_asmd.md) |
-| 9/18/2024 |  |
-| 9/20/2024 |  |
-<!-- Week 3 -->
-| 9/16/2024 | [SystemVerilog Types](./unit1_notes.md#systemverilog-types) |
-| 9/18/2024 | [SystemVerilog Testbenches](./unit1_notes.md#systemverilog-testbenches) |
-| 9/20/2024 | [Functions and Tasks](./unit1_notes.md#functions-and-tasks) |
-<!-- Week 4 -->
-| 9/23/2024 | [SystemVerilog Threads](./unit1_notes.md#systemverilog-threads) |
-| 9/25/2024 | [Verilog 95 and Verilog 2001](./unit1_notes.md#verilog-95-and-verilog-2001) |
-| 9/27/2024 | [VHDL](./unit1_notes.md#vhdl) |
-<!-- Week 5 -->
-| 9/30/2024 | [Digital Arithmetic #1](./unit1_notes.md#digital-arithmetic-1) |
-| 10/2/2024 | [Digital Arithmetic #2](./unit1_notes.md#digital-arithmetic-2) |
-| 10/4/2024 | Exam #1 |
-<!-- Week 6 -->
-| 10/7/2024 | [SPI Controller](./unit1_notes.md#spi-protocol-assignment) |
+| 9/18/2024 | [SystemVerilog testbenches](./testbenches.md) |
+| 9/20/2024 | [Functions, Tasks, and Threads](./functions_tasks.md) |
+| **Week 4** | |
+| 9/23/2024 | [SystemVerilog Types](./systemverilog_types.md) |
+| 9/25/2024 | [Sythesis Tools, Options, and Logs]() |
+| 9/27/2024 | [Memories]() |
+| **Week 5** | |
+| 9/30/2024 | [SPI Controller](./spi.md) |
+| 10/2/2024 | []() |
+| 10/4/2024 | **Exam #1** |
+| **Week 6** | |
+| 10/7/2024 |  |
 | 10/9/2024 | [Timing overview and review]() |
 | 10/11/2024 | [Clock jitter, duty cycle, clock skew]() |
-<!-- Week 7 -->
+| **Week 7** | |
 | 10/14/2024 | [Clock Skew Analylsis]() |
 | 10/16/2024 | [Xilinx Clock Skew Timing reports]() |
 | 10/18/2024 | [Pipelining and Retiming]() |
-<!-- Week 8 -->
+| **Week 8** | |
 | 10/21/2024 | [Reset timing and strategies]() |
 | 10/23/2024 | [Poor Sequential Design Practice]() |
 | 10/25/2024 | [Metastability & Syncrhonizer design]() |
-<!-- Week 9 -->
+| **Week 9** | |
 | 10/28/2024 | [Clock domain crossing]() |
 | 10/30/2024 | [Handshaking]() |
 | 11/1/2024 | [Data transfer across clock domains]() |
-<!-- Week 10 -->
+| **Week 10** | |
 | 11/4/2024 | [MMCMs and FPGA clocks]() |
 | 11/6/2024 | []() |
 | 11/8/2024 | []() |
-<!-- Week 11 -->
-<!-- Week 12 -->
-<!-- Week 13 -->
-<!-- Week 14 -->
 
 
 <!--
