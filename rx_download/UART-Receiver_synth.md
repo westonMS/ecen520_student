@@ -19,7 +19,7 @@ You will also create a seven segment display controller for displaying data from
 
 Create a new directory in your repository and put all the files for this assignment within this directory.
 
-### Seven Segment Controller and Testbench
+## Seven Segment Controller and Testbench
 
 For this assignment and for most future assignments you will need to display values on the seven segment display of the Nexys DDR board.
 To make this easier, you will create a seven segment display controller that will drive the seven segment display.
@@ -73,7 +73,7 @@ Create a makefile rule `make sim_ssd` for this simulation.
 After your seven segment display controller is working correctly, create a makefile rule `make synth_ssd` that will synthesize your controller in out-of-context mode.
 See the instructions from the [previous assignment](../rx_sim/UART_Receiver_sim.md#receiver-synthesis) to describe how to do this.
 
-### Create top-level design
+## Create top-level design
 
 Create a top-level design that uses the following top-level ports:
 
@@ -120,7 +120,7 @@ Design your top-level circuit as follows:
   * Drive all zeros on the digit point input and tie the "blank" signal to zero. 
   * Hook up the seven segment display outputs to the top-level outputs of the design (i.e., AN, CA, CB, CC, CD, CE, CF, CG, DP)
 
-### Top-level testbench
+## Top-level testbench
 
 Create testbench for your top-level rx/tx design by copying and modifying the [tx_top_tb.sv](../tx_download/tx_top_tb.sv) file from the tx download assignment and renaming to rxtx_top_tb.sv:
 The following adaptations should be made to the structure of this testbench:
@@ -130,12 +130,6 @@ The following adaptations should be made to the structure of this testbench:
   * Pass the testbench parameters down to the rxtx_top design
   * Attach the `UART_RXD_OUT` output of your top-level design (i.e., transmitter output) to the `UART_TXD_IN` input of your top-level design (i.e., receiver input). This way when you transmit a character from your transmit module, it will be received by your receiver module.
 * Hook up the seven_segment_check model to your top-level design so you can see the output of the seven segment display (see ssd_tb.sv)
-The following changes should be made to the behavior of the testbench:
-* 
-
-HERE
-
-
 
 This testbench should be designed as follows:
 * Perform the following sequence of events for your testbench:
@@ -157,7 +151,7 @@ When simulating, you can [change the top-level parameters](../resources/vivado_c
 Create another makefile rule named `sim_rx_top_115200_even` that will simulate your top-level design with a baud rate of 115200 and even parity.
 You will need to add the command line option to change the baud rate of your top-level design as described [here](../resources/vivado_command_line.md#setting-parameters-for-simulation).
 
-### Implementation and Download
+## Implementation and Download
 
 At this point you are ready to implement your design, generate a bitfile and download it to your board.
 Create a new makefile rule named `gen_bit` that will generate a bitfile named `rxtx_top.bit` for your top-level design with the default top-level parameters.
@@ -201,9 +195,9 @@ The following assignment specific items should be included in your repository:
     1. Provide a table summarizing the resources your design uses from the implementation utilization report.
     1. Review the timing report and summarize the following:
        * Determine the "Worst Negative Slack" (or WNS). 
-       * summarize the `no_input_delay` and `no_output_delay` section of the report.
+       * Summarize the `no_input_delay` and `no_output_delay` section of the report.
        * How many total endpoints are there on your clock signal?
-       * Find the first net in the `Max Delay Paths` section and indiicate the source and destination of this maximum path.
+       * Find the first net in the `Max Delay Paths` section and indicate the source and destination of this maximum path.
     1. Indicate how many times you had to synthesize and download your bitstream before your circuit worked.
     1. Review the timing report and summarize the `no_input_delay` and `no_output_delay` section of the report.
 

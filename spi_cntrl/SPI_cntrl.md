@@ -3,7 +3,7 @@
 <!--
 -- SPI Controller Part 1 (controller, use model, create testbench, synthesize to find synthesis errors)
 
-- COme up with some "discussion" or exploration exercise as part of the readme.md
+- Come up with some "discussion" or exploration exercise as part of the readme.md
 - It is hard to follow their testbenches. Need to provide more constraints so that I can follow and see that what was recieved is what was sent
   (prehaps have them provide such a statement in the testbench output)
 - Perhaps I provide a detailed module test bench and they create the top-level testbench
@@ -17,12 +17,11 @@ Studnets confused on specification. More detailed steps?
 -->
 In this assignment, you will create a [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface) controller for communicating with a SPI device.
 
-
 The SPI protocol is used extensively in embedded systems as a way to control external devices using a simple serial protocol. 
 There are two devices on the Nexys 4 board that use the SPI protocol (each on a different SPI bus): an accelerometer and a QSPI flash memory. 
-We will use the controller to communicate with the accelerometer.
+We will use the controller in the next assignment to communicate with the accelerometer.
 The SPI protocol is similar to the UART in that it transfers data serially between two devices. 
-The primary difference between SPI and the UART is that SPI includes a clock to synchronize the transfer of data bits and provides simultaneous transmit and receivce.
+The primary difference between SPI and the UART is that SPI includes a clock to synchronize the transfer of data bits and provides simultaneous transmit and receive.
 This allows devices to communicate without agreeing ahead of time on the baud rate.
 
 **Note on Terminology**
@@ -36,9 +35,7 @@ For the purposes of this assignment, the term "Main" will be used for the term "
 While these terms are not perfect, they retain the "M" letter and the "S" letter from the original terms and thus are consistent with the pin names of the SPI protocol.
 Other terminology has been proposed, and it can sometimes be difficult to reconcile the terminology from different devices and data sheets.
 
-## Assignment Instructions
-
-### SPI Controller
+## SPI Controller
 
 The first task for this assignment is to create an SPI controller (or SPI "Main").
 The SPI controller is responsible for communicating with SPI "Subnode" sharing the SPI bus.
@@ -114,8 +111,7 @@ Create a controller with the following top-level ports and parameters:
 | CLK_FREQUENCY | 100_000_000 | Specify the clock frequency of the board |
 | SCLK_FREQUENCY  | 500_000 | Specify the frequency of the SCLK |
 
-
-**Glitches!** (need to latch data going out!)
+When building your controller make sure you put flip-flops on the output signals `SPI_SCLK`, `SPI_MOSI`, and `SPI_CS` to remove any glitches from the signal.
 
 <!--
 **Note:** We have not talked about ASMD diagrams yet so you can ignore the instructions for creating ASMD diagrams.
@@ -132,18 +128,17 @@ When designing yoru controller, use the following Verilog 2001/SystemVerilog con
 * An enumerated type for your state values  
 -->
 
-### SPI Testbench
+## SPI Testbench
 
 Once you have created your SPI controller, create a testbench to simulate transactions with your controller.
 I have provided a [simulation model](./spi_subunit.sv) for you that simulates a SPI subnode.
 Instance your SPI controller and the provided simulation model and connect the two together.
 Design your testbench to do the following:
-  * Generate a free oscillating clock
-  * Provide initial values for the inputs to your receiver
-    * First let a few clocks go by (5+) so that it operates with invalid inputs for a few cycles
-    * Set all inputs to a default value that does not start the receiver
-  * Issue a reset by waiting a few clock cycles, issueing the reset for a few clock cycles, and then deasserting the reset
-  * Send at least 10 bytes over SPI as single byte transfers. 
+  * Make the top-level testbench parameterizable with the two top-level parameters.
+  * Generate a free oscillating clock and run the clock for several cycles before setting any inputs to your receiver.
+  * Provide initial values for the inputs to your receiver (without starting a transaction)
+  * Issue a reset by waiting a few clock cycles, issuing the reset for a few clock cycles, and then deasserting the reset
+  * Send at least 10 bytes over SPI as single byte transfers. You should create a task to perform this transer.
     * Transmit a random 8-bit value for each transaction and print the value you are transmitting
     * Print the value of the data received from the transaction from the subnode
     * Check to make sure the character you sent is the character you received. Print a message that you correctly received the character you sent or print that an error occurred.
@@ -152,8 +147,7 @@ Design your testbench to do the following:
   * End your simulation with `$stop`
 
 Create a makefile rule named `sim_spi_cntrl` that will run your testbench with the default parameters.
-
-Change the spi_clock rate?
+In addition, create a makefile named `sim_spi_cntrl_100` that runs the same testbench but using 100_000 as the `SCLK_FREQUENCY` parameter.
 
 <!--
 Use Verilog 2001/SystemVerilog:
@@ -166,89 +160,80 @@ Use Verilog 2001/SystemVerilog:
 
 -->
 
-### ADXL362 Controller
+## ADXL362 Controller
 
-You will create a module that instances your SPI controller and controls the accelerometer on the Nexys4 board. 
+You will create another module that instances your SPI controller and controls the accelerometer on the Nexys4 board. 
 Links to the accelerometer are listed below for your convenience. 
 
 The ADXL362 accelerometer uses a three byte transfer to perform a read or a write to/from its registers (see figures 36 and 37 of the [data sheet](https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL362.pdf)). 
-You will need to create a state machine in your top-level design to implement the three byte transfer using the SPI controller (i.e., send one byte, issue hold_ss and issue second byte, and so on for three bytes). 
-You will need to support both the write and read register operation as described below:
+You will need to support both the write and read register operation as described below.
+Start your controller module by creating the top-level ports:
 
-  * Write register (when left button pressed)
-    * Byte 0: write register (0x0a)
-    * Byte 1: 8-bit address (taken from the lower 8 switches)
-    * Byte 2: Data to write (taken from the upper 8 switches)
-  * Read register (when right button pressed)
-    * Byte 0: read register (0x0b)
-    * Byte 1: 8-bit address (taken from the lower 8 switches)
-    * Byte 2: Don't care (capture the byte received on this operation)
-
-The I/O for the top-level design should be designed as follows:
-  * The left button (BTNL) should be used to initiate a write to the accelerometer
-  * The right button (BTNR) should be used to initiate a read from the accelerometer
-  * The lower 8 switches should be used to specify the 8-bit address of the register to read/write
-  * The upper 8 switches should be used to specify the 8-bit data used for register writes
-  * The 16 LEDs should follow the value of the switches so the user can easily verify that the address/data is properly set.
-  * The accelerometer provides two interrupt pins that you do not need to use for this assignment (do not hook up these pins).
-  * Instance your seven segment display controller and hook it up so that the last byte received from a register read is displayed on the _lower two digits_ of the seven segment display. The previously received bytes should be shifted up to the other seven segment display so you can still see them (with 8 digits you should be able to display the last four register read values).
-  * Highight LED16_B when your SPI controller unit is busy.
-
-Provide the following parameters on your top-level design:
-
+| Port Name | Direction | Width | Function |
+| ---- | ---- | ---- | ----  |
+| clk | Input | 1 | Clock |
+| rst | Input | 1 | Reset |
+| start| Input | 1 | start a transfer |
+| write | Input | 1 | Indicates that a write operation occurs |
+| data_to_send | Input | 8 | Data to send to subunit |
+| address | Input | 8 | Address for data transfer |
+| SPI_MISO | Input | 1 | SPI MISO signal |
+| busy | Output | 1 | Controller is busy |
+| done | Output | 1 | One clock cycle signal indicating that the transfer is done and the received data is valid |
+| SPI_SCLK | Output | 1 | SCLK output signal |
+| SPI_MOSI | Output | 1 | MOSI output signal |
+| SPI_CS | Output | 1 | CS output signal |
+| data_received | Output | 8 | Data received on the last transfer |
 | Parameter Name | Default Value | Purpose |
 | ---- | ---- | ---- |
-| CLK_FREQUECY | 100_000_000 | Specify the clock frequency of the board |
-| SCLK_FRUQENCY  | 500_000 | Specify the frequency of the SCLK |
+| CLK_FREQUENCY | 100_000_000 | Specify the clock frequency of the board |
+| SCLK_FREQUENCY  | 500_000 | Specify the frequency of the SCLK |
 
+You will need to create a state machine in your top-level design to implement the three byte transfer using the SPI controller (i.e., send one byte, issue hold_ss and issue second byte, and so on for three bytes). 
+When the `start` signal is asserted read the `write` signal to determine what type of operation to perform.
+If `write` is asserted, perform a write sequence.
+If `read` is asserted, perform a read sequence. 
+These sequences are as follows:
 
-### SPI Top-Level Testbench
+  * Write register (when `write` is asserted)
+    * Byte 0: write register (0x0a)
+    * Byte 1: 8-bit address (taken from the `address` input)
+    * Byte 2: Data to write (taken from `data_to_send`)
+  * Read register (when right button pressed)
+    * Byte 0: read register (0x0b)
+    * Byte 1: 8-bit address (taken from the `address` input)
+    * Byte 2: Don't care (capture the byte received on this operation)
 
-Create a top-level testbench of your top-level design that tests the operation of your top-level AXDL362L controller.
+## ADXL362 Testbench
+
+Create a testbench of your controller that tests the operation of your AXDL362L controller.
 This testbench should be designed as follows:
-* Make the top-level testbench parameterizable with for the two top-level parameters.
+* Make the top-level testbench parameterizable with the two top-level parameters.
 * Create a free-running clock
 * Instance your top-level design
 * Instance the [ADXL362 simulation](./adxl362_model.sv) model
-  * attach the SPI signals from the top-level design to the SPI signals of the simulation
+  * attach the SPI signals from the design to the SPI signals of the simulation
 * Perform the following sequence of events for your testbench:
   * Execute the simulation for a few clock cycles without setting any of the inputs
   * Set default values for the inputs (reset, buttons, and switchces)
   * Wait for a few clock cycle, assert the reset for a few clock cycles, deassert the reset (don't forget that the reset signal for the board is low asserted)
-  * Perform the following operations within your testbench by setting the buttons and switches:
+  * Perform the following operations within your testbench by setting the address and data_to_send:
     * Read the DEVICEID register (0x0). Should get 0xad
     * Read the PARTID (0x02) to make sure you are getting consistent correct data (0xF2)
     * Read the status register (0x0b): should get 0x40 on power up (0xC0?)
     * Write the value 0x52 to register 0x1F for a soft reset
 
-Make sure your top-level design successfully passes this testbench.
-Add a makefile rule named `sim_top` that will perform this simulation from the command line.
+Make sure your design successfully passes this testbench.
+Add the makefile rules named `sim_adxl362` and `sim_adxl362_100` that will perform this simulation from the command line (the `sim_adxl362_100` rule should be used to set the `SCLK_FREQUENCY` parameter to 100_000).
 
+## Preliminary Synthesis
 
-### Implementation and Download
+Although we will not be downloading this design in this assignment, it is important to perform a preliminary synthesis step on these modules to identify any synthesis problems.
+Create a makefile rule named `synth_adxl362_cntrl` that performs "out of context" synthesis on this module (see the [instrucitons](../rx_sim/UART_Receiver_sim.md#receiver-synthesis) on how to do this).
+Make sure all synthesis warnings and errors are resolved before submitting your assignment.
 
-At this point you are ready to implement your design, generate a bitfile and download your design to your board.
-Create a new makefile rule named `gen_bit` that will generate a bitfile named `spi_adx362l.bit` for your top-level design with the default top-level parameters.
-
-Run your design through the implementation tools and make sure there are *no warnings*. 
-You may need to [adjust the message severity level](../resources/vivado_command_line.md#adjusting-message-severity-levels) fo rsome messages.
-
-Once you have created your design and downloaded it to the board, you can make sure it works by trying the following:
-
-  * Read the DEVICEID register (0x0). Should get 0xad
-  * Read the PARTID (0x02) to make sure you are getting consistent correct data (0xF2)
-  * Read the status register (0x0b): should get 0x40 on power up (0xC0?)
-  * Write the value 0x52 to register 0x1F for a soft reset
-  * Write the value 0x00 to register 0x1F to clear the soft reset
-  * Write the value 0x02 to register 0x2D to set "enable measure command"
-  * Read the status register (0x0b): should get 0x41 now (you won't get any readings until the status is set to 0x41)
-  * Write the value 0x14 to register 0x2C to set the Filter Control Register control register (50Hz)
-  * Read the various accelerometer values to see changes in the acceleration (You can rotate the board around different axis to see changes in the readings)
-    * Register 0x08 for XDATA
-    * Register 0x09 for YDATA
-    * Register 0x0A for ZDATA
                                       
-Resources:
+**Resources:**
   * [Nexys DDR user guide](https://digilent.com/reference/_media/reference/programmable-logic/nexys-4-ddr/nexys4ddr_rm.pdf)
   * [ADXL362 Product Page](https://www.analog.com/en/products/adxl362.html)
   * [ADXL362 Data Sheet](https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL362.pdf)
@@ -256,24 +241,9 @@ Resources:
 
 ## Submission and Grading
 
-1. Prepare your repository
+1. Required Makefile rules:
     * `sim_spi_cntrl`
+    * `sim_spi_cntrl_100`
     * `synth_spi_cntrl`
-
-  * Make sure all of the _essential_ files needed to complete your project are committed into your repository
-  * Make sure you have a  `.gitignore` file for your assignment directory and that all intermediate files are ignored.
-  * Make sure you have a `makefile` with all the necessary make rules
-    * `sim_spi_cntrl`: performs command line simulation of the spi controller
-    * `sim_top`: performs command line simulation of the top SPI testbench
-    * `gen_bit`: Generates a bitstream for your top-level SPI design
-2. Commit and tag your repository
-  * Make sure all of your files are committed and properly tagged (using the proper tag)
-3. Create your assignment [Readme.md](../resources/assignment_mechanics.md#assignment-submission) file
-  * Create the template file based on the instructions linked above
-  * Add the following items for the assignment-specific section of the readme:
-    1. **Resoures**: Provide a summary of the number of resources your design uses (see the output from the utilization report). Specifically, indicate the number of `Slice LUTs`, `Slice Registers`, and `Bonded IOB` resources your design uses.
-    2. **Warnings**: You should not have _any_ warnings in your project as described in the assignment instructions above. Make sure you don't have any warnings and state this in your readme.
-    3. **Timing**: Determine the "Worst Negative Slack" (or WNS). This is found in the timing report and indicates how much timing you slack you have with the current clocking.
-
-
-
+    * `sim_adxl362`
+    * `synth_adxl362_cntrl`
