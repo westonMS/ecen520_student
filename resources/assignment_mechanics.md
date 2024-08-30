@@ -85,8 +85,7 @@ For this class you are required to submit regular commits to your repository as 
 When using Git, you typically commit your code when you have something working to checkpoint your progress.
 In this class we will use Git more aggressively by having you commit your code *when you encounter a problem*.
 This way I can track your progress through the assignment and see the problems you ran into.
-This way, I can track your progress through the assignment and see the problems you ran into.
-This will help me improve the labs and provide better feedback.
+These commits will help me improve the labs and provide better feedback.
 Further, I plan on using your commit history as part of a training set for a machine learning project I am working on (this project will collect examples of "non working" HDL code, the error messages that were generated, and the fixes that were made to get the code working).
 
 When committing your code after you experience a problem, you must add a commit message with the following form: `"ERR:<error code> <Error summary>"`.

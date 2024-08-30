@@ -12,9 +12,8 @@ import repo_test
 import test_suite_520
 
 def main():
-    ''' Main executable for script
-    '''
-    tester = test_suite_520.build_test_suite_520("tx_download",  min_err_commits = 3, max_repo_files = 20)
+
+    tester = test_suite_520.build_test_suite_520("tx_download",  min_err_commits = 4, max_repo_files = 20)
     tester.add_make_test("sim_debouncer")
     tester.add_make_test("sim_tx_top")
     tester.add_make_test("sim_tx_top_115200_even")

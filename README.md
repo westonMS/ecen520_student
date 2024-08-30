@@ -4,7 +4,7 @@ This repository contains the instructions and base files needed to complete the 
 
 ## Assignments
 
-All assignments must be submitted on a personal private GitHub repository. 
+All assignments must be submitted on a classroom GitHub repository. 
 Review the [assignment mechanics](./resources/assignment_mechanics.md) page to learn how to properly submit your assignments.
 
 | # | Name | Directory/Lab Tag | 
@@ -13,11 +13,7 @@ Review the [assignment mechanics](./resources/assignment_mechanics.md) page to l
 | 2 | [UART Transmitter-Synthesis and Download](./tx_download/uart_transmitter/UART_Transmitter_synth.md) | `tx_download` |
 | 3 | [UART Receiver Simulation](./rx_sim/UART_Receiver_sim.md) | `rx_sim` |
 | 4 | [UART Synthesis and Download](./rx_download/UART_Receiver_synth.md) | `rx_download` |
-| 3 | [VHDL](./vhdl/VHDL.md) | `vhdl` |
-| 4 | [SPI](./spi/SPI.md) | `spi` |
-| 5 | [I2C](./i2c/I2C.md) | `i2c` |
-| 6 | [Clocking and Metastability](./mmcm/mmcm.md) | `mmcm` |
-| 7 | [BRAM Memory](./bram/bram.md) | `bram` |
-| 8 | [Microblaze](./ip_integrator/microblaze.md) | `ublaze` |
-| 9 | [Project: Part 1](./old/project_part1.md) **SKIP** | `final_project`/`part_1` |
-| 10 | [Final Project](./old/final_project.md) | `final_project`/`final_project` |
+| 5 | [SPI Controller-Simulation](./spi_cntrl/SPI_cntrl.md) | `spi_cntrl` |
+| 6 | [SPI Controller-Download](./spi_download/spi_download.md) | `spi_download` |
+
+**Additional Assignments will be posted when they are ready**

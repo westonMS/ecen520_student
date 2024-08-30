@@ -13,9 +13,8 @@ import repo_test
 
 
 def main():
-    ''' Main executable for script
-    '''
-    tester = test_suite_520.build_test_suite_520("rx_download",  min_err_commits = 3, max_repo_files = 20)
+
+    tester = test_suite_520.build_test_suite_520("rx_download",  min_err_commits = 5, max_repo_files = 20)
     tester.add_make_test("sim_ssd")
     tester.add_make_test("synth_ssd")
     tester.add_make_test("sim_rxtop")

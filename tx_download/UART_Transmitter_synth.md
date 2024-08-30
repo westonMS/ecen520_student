@@ -216,6 +216,7 @@ The following assignment specific items should be included in your repository:
     * `sim_tx_top_115200_even`:
     * `gen_tx_bit`: Generate a bitfile for your transmitter
     * `gen_tx_bit_115200_even`: Generate a bitfile for your transmitter with a baud rate of 115200 and even parity
+1. You need to have at least 4 "Error" commits in your repository as described [here](../resources/assignment_mechanics.md#github-commits).
 2. Assignment specific Questions:
     1. The synthesis log will summarize any state machines that it created. Provide a table listing the state and the encoding that the synthesis tool used for your transmitter state machine.
     1. Provide a table summarizing the resources your design uses. Use the template table below. You can get this information from the implementation utilization report.

@@ -15,17 +15,20 @@ class test_suite_520(repo_test_suite):
         self.repo_tests = []
         self.build_tests = []
         self.clean_tests = []
-        self.add_repo_tests(min_err_commits,max_repo_files)
+        self.add_repo_tests(min_err_commits, max_repo_files, tag_str = assignment_name)
         self.add_clean_tests()
         self.run_repo_tests = True
         self.run_build_tests = True
         self.run_clean_tests = True
 
-    def add_repo_tests(self, min_err_commits, max_repo_files):
-        self.add_repo_test(repo_test.list_git_commits())
+    def add_repo_tests(self, min_err_commits, max_repo_files, tag_str = None, list_git_commits = True):
+        if list_git_commits:
+            self.add_repo_test(repo_test.list_git_commits())
         self.add_repo_test(get_err_git_commits(min_err_commits))
         self.add_repo_test(repo_test.check_for_uncommitted_files())
         self.add_repo_test(repo_test.check_for_max_repo_files(max_repo_files))
+        if tag_str is not None:
+            self.add_repo_test(repo_test.check_for_tag(tag_str))
 
     def add_clean_tests(self):
         self.add_clean_test(repo_test.check_for_untracked_files())
@@ -42,10 +45,10 @@ class test_suite_520(repo_test_suite):
         self.build_tests.append(test)
 
     def add_make_test(self,make_rule):
+        ''' Add a makefile rule test '''
         make_test = repo_test.make_test(make_rule)
         self.add_build_test(make_test)
 
-    #def run_tests(self, run_repo_tests = True, run_build_tests = True, run_clean_tests = True):
     def run_tests(self):
         ''' Run all the registered tests '''
         self.print_test_start_message()
@@ -67,8 +70,6 @@ def build_test_suite_520(assignment_name,  min_err_commits = 3, max_repo_files =
     parser.add_argument("--norepo", action="store_true", help="Do not run Repo tests")
     parser.add_argument("--nobuild", action="store_true", help="Do not run build tests")
     parser.add_argument("--noclean", action="store_true", help="Do not run clean tests")
-    #parser.add_argument("--min_err_commits", type=int, default=3, help="Minimum number of error commits")
-    #parser.add_argument("--max_repo_files", type=int, default=20, help="Maximum number of files in the repository")
     args=parser.parse_args()
     if args.repo is None:
         path = os.getcwd()
