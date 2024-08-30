@@ -108,7 +108,7 @@ class repo_test_suite():
     def print_test_start_message(self):
         """ Start message at start of test """
         self.print_test_status(f"Running test \'{self.test_name}\'")
-        self.print_test_status()
+        self.print_test_status("")
 
     def print_test_end_message(self):
         self.print_test_status(f"Test completed \'{self.test_name}\'")
