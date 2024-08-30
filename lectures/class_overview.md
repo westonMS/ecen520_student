@@ -16,4 +16,4 @@ Review the learning suite syllabus carefully and the [assignment mechanics](.ass
 
 ## Resources
 * [ECEN 320 Web page](https://byu-cpe.github.io/ecen320/)
-* [ECEN 323 Web page](http://ecen323wiki.groups.et.byu.net/)
+* [ECEN 323 Web page](https://byu-cpe.github.io/ecen323/)

@@ -131,6 +131,7 @@ This section provides a brief summary checklist of what you need to do to submit
     * Complete any assignment specific responses in the report. These will be listed in the assignment instructions.
 8. Commit, tag, and push your repository with the predetermined assignment tag.
 
+Each assignment has a `assignment_check.py` script that you can run to check your repository for compliance with the assignment requirements.
 
 ## Assignment Grading Checklist
 
