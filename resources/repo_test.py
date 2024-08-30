@@ -203,26 +203,6 @@ class check_for_tag(repo_test):
         repo_test_suite.print_error(f'Tag {self.tag_name} not found in repository')
         return self.warning_result()
 
-class check_for_tag(repo_test):
-    ''' This tests to see if the given tag exists in the repository.
-    '''
-    def __init__(self, tag_name):
-        '''  '''
-        super().__init__()
-        self.tag_name = tag_name
-
-    def module_name(self):
-        return f"Check for tag {self.tag_name}"
-
-    def perform_test(self, repo_test_suite):
-        if self.tag_name in repo_test_suite.repo.tags:
-            commit = repo_test_suite.repo.tags[self.tag_name].commit
-            tag_date = datetime.fromtimestamp(commit.committed_date)
-            repo_test_suite.print(f'Tag {self.tag_name} found in repository (commit date: {tag_date})')
-            return self.success_result()
-        repo_test_suite.print_error(f'Tag {self.tag_name} not found in repository')
-        return self.warning_result()
-
 class check_for_max_repo_files(repo_test):
     ''' 
     '''
