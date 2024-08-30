@@ -11,8 +11,6 @@ sys.path.append( str(resources_path) )
 import test_suite_520
 
 def main():
-    ''' Main executable for script
-    '''
     tester = test_suite_520.build_test_suite_520("tx_sim",  min_err_commits = 3, max_repo_files = 20)
     tester.add_make_test("sim_tx")
     tester.add_make_test("sim_tx_115200_even")

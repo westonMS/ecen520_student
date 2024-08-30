@@ -12,6 +12,7 @@ import os
 import sys
 from enum import Enum
 from git import Repo
+import datetime
 
 class result_type(Enum):
     SUCCESS = 1
@@ -131,14 +132,15 @@ class file_exists_test(repo_test):
         return self.error_result()
 
 class make_test(repo_test):
-    ''' Performs makefile rules
+    ''' Executes a makefile rule in the repository.
     '''
 
     def __init__(self, make_rule, generate_output_file = True, make_output_filename=None,
                  abort_on_error=True):
-        '''  '''
+        ''' make_rule is the string makefile rule that is executed. '''
         if generate_output_file and make_output_filename is None:
-            make_output_filename = make_rule.replace(" ", "_") + '.log'
+            # default makefile output filename
+            make_output_filename = "make_" + make_rule.replace(" ", "_") + '.log'
         super().__init__(abort_on_error=abort_on_error, process_output_filename=make_output_filename)
         self.make_rule = make_rule
 
@@ -155,9 +157,8 @@ class make_test(repo_test):
             return self.error_result()
         return self.success_result()
 
-
 class check_for_untracked_files(repo_test):
-    ''' This tests the repo for any untracked files. Returns true if there are no untracked files.
+    ''' This tests the repo for any untracked files in the repository.
     '''
     def __init__(self, ignore_ok = True):
         '''  '''
@@ -172,15 +173,35 @@ class check_for_untracked_files(repo_test):
 
         untracked_files = repo_test_suite.repo.git.ls_files("--others", "--exclude-standard")
         if untracked_files:
-            repo_test_suite.print_error(f'Untracked files found in repository:')
+            repo_test_suite.print_error('Untracked files found in repository:')
             files = untracked_files.splitlines()
             for file in files:
                 repo_test_suite.print_error(f'  {file}')
             # return False
             return self.warning_result()
-        repo_test_suite.print(f'No untracked files found in repository')
+        repo_test_suite.print('No untracked files found in repository')
         # return True
         return self.success_result()
+
+class check_for_tag(repo_test):
+    ''' This tests to see if the given tag exists in the repository.
+    '''
+    def __init__(self, tag_name):
+        '''  '''
+        super().__init__()
+        self.tag_name = tag_name
+
+    def module_name(self):
+        return f"Check for tag {self.tag_name}"
+
+    def perform_test(self, repo_test_suite):
+        if self.tag_name in repo_test_suite.repo.tags:
+            commit = repo_test_suite.repo.tags[self.tag_name].commit
+            tag_date = datetime.fromtimestamp(commit.committed_date)
+            repo_test_suite.print(f'Tag {self.tag_name} found in repository (commit date: {tag_date})')
+            return self.success_result()
+        repo_test_suite.print_error(f'Tag {self.tag_name} not found in repository')
+        return self.warning_result()
 
 class check_for_max_repo_files(repo_test):
     ''' 
@@ -198,7 +219,7 @@ class check_for_max_repo_files(repo_test):
         n_tracked_files = len(tracked_files)
         repo_test_suite.print(f"{n_tracked_files} Tracked git files in {repo_test_suite.relative_repo_path}")
         if n_tracked_files > self.max_dir_files:
-            repo_test_suite.print_error(f"  Too many tracked files")
+            repo_test_suite.print_error(f"  Too many tracked files ({n_tracked_files} found with a max of {self.max_dir_files})")
             # return False
             return self.warning_result()
         # return True
@@ -224,13 +245,13 @@ class check_for_ignored_files(repo_test):
         repo_test_suite.print(f'Checking for ignored files at {self.check_path}')
         ignored_files = repo_test_suite.repo.git.ls_files(self.check_path, "--others", "--ignored", "--exclude-standard")
         if ignored_files:
-            repo_test_suite.print_error(f'Ignored files found in repository:')
+            repo_test_suite.print_error('Ignored files found in repository:')
             files = ignored_files.splitlines()
             for file in files:
                 repo_test_suite.print_error(f'  {file}')
             # return False
             return self.warning_result()
-        repo_test_suite.print(f'No ignored files found in repository')
+        repo_test_suite.print('No ignored files found in repository')
         # return True
         return self.success_result()
 
@@ -249,12 +270,12 @@ class check_for_uncommitted_files(repo_test):
         uncommitted_changes = repo_test_suite.repo.index.diff(None)
         modified_files = [item.a_path for item in uncommitted_changes if item.change_type == 'M']
         if modified_files:
-            repo_test_suite.print_error(f'Uncommitted files found in repository:')
+            repo_test_suite.print_error('Uncommitted files found in repository:')
             for file in modified_files:
                 repo_test_suite.print_error(f'  {file}')
             # return False
             return self.warning_result()
-        repo_test_suite.print(f'No uncommitted files found in repository')
+        repo_test_suite.print('No uncommitted files found in repository')
         # return True
         return self.success_result()
 
