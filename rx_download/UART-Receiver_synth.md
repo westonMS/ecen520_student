@@ -191,6 +191,7 @@ The following assignment specific items should be included in your repository:
     * `sim_rx_top_115200_even`: performs command line simulation of the top testbench
     * `gen_bit`: Generates a bitstream for your top-level design
     * `gen_bit_115200_even`: Generates a bitstream for your top-level design
+1. You need to have at least 5 "Error" commits in your repository
 2. Assignment specific Questions:
     1. Provide a table summarizing the resources your design uses from the implementation utilization report.
     1. Review the timing report and summarize the following:
@@ -199,5 +200,4 @@ The following assignment specific items should be included in your repository:
        * How many total endpoints are there on your clock signal?
        * Find the first net in the `Max Delay Paths` section and indicate the source and destination of this maximum path.
     1. Indicate how many times you had to synthesize and download your bitstream before your circuit worked.
-    1. Review the timing report and summarize the `no_input_delay` and `no_output_delay` section of the report.
 

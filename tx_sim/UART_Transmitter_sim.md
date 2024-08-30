@@ -144,6 +144,7 @@ The following assignment specific items should be included in your repository:
 1. Required Makefile rules:
     * `sim_tx`: performs command line simulation of tx testbench using the default parameters
     * `sim_tx_115200_even`: performs command line simulation of tx testbench with a baud rate of 115200 and even parity
+1. You need to have at least 3 "Error" commits in your repository as described [here](../resources/assignment_mechanics.md#github-commits).
 2. Assignment specific Questions:
     1. Provide a short summary of how much HDL review you had to do to complete the assignment. Also, rate your HDL designs skills from 1-10.
     2. Indicate the simulation time of the two different simulations and suggest why the simulation times are different
