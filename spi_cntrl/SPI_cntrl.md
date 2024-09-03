@@ -57,7 +57,7 @@ When there is no transaction, the signal should be low.
 There is a control bit `CPOL` that determines the polarity of the idle `SCLK`.
 We will assume `CPOL` = 0 meaning that SCLK is low when no transactions are in process.
 The `SCLK` signal will toggle at a much slower rate than our input 100 MHz clock.
-For the [accelerometer](https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL362.pdf) we are using, the maximum frequency of the `SCLK` is 10 MHz (the clock low and clock high phases must be 50 ns or longer for a minimum clock period of 100 ns).
+For the [accelerometer](https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL362.pdf) we are using, the maximum frequency of the `SCLK` is 10 MHz (the clock low and clock high phases must be 50 ns or longer for a minimum clock period of 100 ns).  
 Your controller will need to generate the desired `SCLK` frequency based on a parameter, `SPI_CLOCK_HZ`.
 Like the UART, you will need to have a state that is multiple clock cycles long for each phase of the `SCLK` signal.
 You will determine the number of clock cycles for each phase of `SCLK` by the `SPI_CLOCK_HZ` and `SYS_CLOCK_HZ` module parameters.
@@ -67,9 +67,9 @@ Your controller should generate the `/CS`, `SCLK`, and `MOSI` signals as shown i
 ![SPI Transaction](./spi_transaction.jpg)
 
 The reading/writing of a byte will require 17 phases as follows:
-  1. `/CS` is driven low and valid data (MSB) is driven by the Main on to `MOSI`
-  2. `CLK` is driven high (the subunit will sample `MOSI` on this low to high transition)
-  3. `CLK` is driven low (the controller will sample `MISO` on this high to low transition). The controller drives the next bit of data on `MOSI`.
+  1. `/CS` is driven low and valid data (MSB) is driven by the Main on to `MOSI`. If the subunit is sending data, it will drive the MSB of its data.
+  2. `CLK` is driven high. The subunit will sample `MOSI` on this low to high transition and the controller will sample the `MISO` signal. 
+  3. `CLK` is driven low. Both the controller and the subunit change the valus on the `MOSI` and `MISO` signals to make sure that the setup and hold times are met for the next transition of `CLK`.
   4. The controller performs steps 2 and 3 for the remaining 7 bits of the byte.
   5. In the final phase, drives `/CS` high to end the transaction. 
 
