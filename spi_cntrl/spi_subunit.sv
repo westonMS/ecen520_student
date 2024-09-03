@@ -1,18 +1,19 @@
 // simulation model for a generic SPI subunit.
 // This model will print the value received and send a 8-bit counter value that increments each transaction.
 
-module spi_subunit (sclk, mosi, miso, cs);
+module spi_subunit (sclk, mosi, miso, cs, send_value, received_value);
 
     input wire logic sclk;
     input wire logic mosi;
     output miso;
     input wire logic cs;
+    output logic [7:0] received_value;
+    input wire logic [7:0] send_value;
 
     int transfer_count = 1;  // Initial counter value to send out on each transaction
-    logic [7:0] received_value = 0;
-    logic [7:0] send_value = 0;
     int bits_received = 0;
     logic active = 0;
+    logic [7:0] data_out;
 
     // High impedence if there is not a transaction going on
     assign miso = active ? send_value[7] : 1'bz;
@@ -23,11 +24,20 @@ module spi_subunit (sclk, mosi, miso, cs);
         if (cs == 0) begin // Only process sclks when CS is low
             received_value <= {received_value[6:0],mosi};
             bits_received <= bits_received + 1;
-            if (bits_received == 0)
-                send_value <= transfer_count;
-            else
-                send_value <= {send_value[6:0],1'b0};
+            send_value <= {send_value[6:0],1'b0};
         end
+    end
+
+    // Reset internal state
+    always@(posedge cs) begin
+        active <= 1'b0;
+    end
+
+    // Setup transfer
+    always@(negedge cs) begin
+        active <= 1'b1;
+        bits_received <= 0;
+        data_out <= send_value;
     end
 
     always@(negedge sclk && bits_received == 8)
@@ -39,18 +49,5 @@ module spi_subunit (sclk, mosi, miso, cs);
         // Reset bits received counter
         bits_received <= 0;
     end
-
-
-    // Reset internal state
-    always@(posedge cs) begin
-        active <= 1'b0;
-    end
-
-    // Setup transfer
-    always@(negedge cs) begin
-        active <= 1'b1;
-        bits_received <= 0;
-    end
-
 
 endmodule
