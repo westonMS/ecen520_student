@@ -1,6 +1,8 @@
-# ECEN 520 Assignments
+# ECEN 520 - Advanced Digital Design
 
 This repository contains the lecture schedule (including links to lecture summaries), descriptions of the assignments, and code necessary for completing the assignments for ECEN 520.
+* [Lecture Schedule](#lecture-schedule)
+* [Assignments](#assignments)
 
 ## Lecture Schedule
 

@@ -55,10 +55,11 @@ You will need to use the command line mode for submitting this assignment.
 ## UART Transceiver Design
 
 The primary goal of this assignment is to design a UART transmitter for transmitting data over a conventional serial connection.
-You will need to create this design in SystemVerilog and simulate it using QuestaSim.
+You will need to create this design in *SystemVerilog* and simulate it using QuestaSim.
 There is a ECEN 320 lab description for a [UART Transceiver](https://byu-cpe.github.io/ecen320/labs/lab-09/) that you can use as a reference.
 
 Create your transmitter with the following ports and parameters (you must name the ports and parameters as indicated for the testbenches to operate correctly):
+
 | Port Name | Direction | Width | Function |
 | ---- | ---- | ---- | ---- |
 | clk | Input | 1 | Clock |
@@ -67,6 +68,7 @@ Create your transmitter with the following ports and parameters (you must name t
 | din | Input | 8 | 8 data bits to send |
 | busy | Output | 1 | Indicates that the transmitter is in the middle of a transmission |
 | dout | Output | 1 | Transmitter output signal |
+
 | Parameter Name | Type | Default | Purpose |
 | ---- | ---- | ---- | ---- |
 | CLK_FREQUENCY | integer | 100_000_000 | Clock frequency of the design |
