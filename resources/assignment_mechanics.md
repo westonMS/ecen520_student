@@ -186,7 +186,7 @@ Note that submissions that do not simulate or build (i.e., submissions with synt
 
 **Coding Standard**
 
-All of your submissions should conform to the class [coding standards](./coding_stadard.md).
+All of your submissions should conform to the class [coding standards](./coding_standard.md).
 The coding standards are progressive meaning that additional standards will be added gradually throughout the class.
 Each assignment will indicate which code standard level you will be required to follow.
 
