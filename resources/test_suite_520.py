@@ -21,7 +21,8 @@ class test_suite_520(repo_test_suite):
         self.run_build_tests = True
         self.run_clean_tests = True
 
-    def add_repo_tests(self, min_err_commits, max_repo_files, tag_str = None, list_git_commits = True):
+    def add_repo_tests(self, min_err_commits, max_repo_files, tag_str = None, list_git_commits = True, require_report_file = True):
+        # Tests involved with checking the integrity and requirements of the repository
         if list_git_commits:
             self.add_repo_test(repo_test.list_git_commits())
         self.add_repo_test(get_err_git_commits(min_err_commits))
@@ -29,6 +30,8 @@ class test_suite_520(repo_test_suite):
         self.add_repo_test(repo_test.check_for_max_repo_files(max_repo_files))
         if tag_str is not None:
             self.add_repo_test(repo_test.check_for_tag(tag_str))
+        if require_report_file:
+            self.add_repo_test(repo_test.file_exists_test(["report.md",]))
 
     def add_clean_tests(self):
         self.add_clean_test(repo_test.check_for_untracked_files())

@@ -36,7 +36,8 @@ If you feel that the class chatbot is insufficient, please contact me to help me
 
 Every assignment will require you to submit a report.
 This report is submitted as a markdown file named `report.md` in your assignment submission directory.
-A template report file has been created for you for each assignment, and you need to fill in all required sections of the report as part of your submission.
+A [template report](./report_template.md) file has been created for you.
+You need to customize this for each assignment and include it with your repository as part of your submission.
 
 For each assignment you will need to keep track of the number of hours you spent on the assignment.
 This helps me gauge the difficulty of the assignment and see how long it takes for you to complete it.
@@ -64,7 +65,6 @@ You will lose points on your assignment if you fail to clean all intermediate fi
 
 An assignment "submission" involves a final commit and tag of files to your class repository. 
 The assignment due dates are posted on learning suite. 
-Please review the learning suite syllabus for details on the late policy for assignments. 
 Each assignment submission will require a unique 'tag' where the actual tag is the same as the directory for the assignment.
 When grading your assignment, I will check the submission time of this tag. 
 If your latest commit of any file in the assignment with this tag is later than the deadline then you will be penalized for being late.
@@ -88,11 +88,11 @@ This way I can track your progress through the assignment and see the problems y
 These commits will help me improve the labs and provide better feedback.
 Further, I plan on using your commit history as part of a training set for a machine learning project I am working on (this project will collect examples of "non working" HDL code, the error messages that were generated, and the fixes that were made to get the code working).
 
-When committing your code after you experience a problem, you must add a commit message with the following form: `"ERR:<error code> <Error summary>"`.
+When committing your code after you experience a problem add a commit message with the following form: `"ERR:<error code> <Error summary>"`.
 This message is needed for me to review the various types of errors you are experiencing and see how you resolve the problem.
 The following error codes should be used:
 * VLOG: An error with the QuestaSim module compilation. Use this error code for VHDL errors as well (the VCOM tool in QuestaSim)
-* VSIM: An error when trying to run the vsim simulation tool. Note that this code should not be used when your module simulates but operates incorrectly. This is for errors in the elaboration process before starting the vsim simulation.
+* SIM: An error when trying to run the vsim simulation tool. Note that this code should not be used when your module simulates but operates incorrectly. This is for errors in the elaboration process before starting the vsim simulation.
 * TEST: When your module fails a simulation testbench
 * SYNTH: An error with the synthesis process (`synth_design`)
 * IMPL: An error during the implementation process (`opt_design`, `place_design`, `route_design`, or `write_bitstream`)
@@ -101,8 +101,7 @@ The following error codes should be used:
 For example, the following commit message demonstrates the proper way to describe a synthesis error: `"ERR:SYNTH There was a combinational feedback loop in my design"`.
 
 You are encouraged to commit regularly when your code reaches various stable states of working.
-In these cases you do not need any special commit message.
-You will need to commit your final working code as part of the submission process.
+Each assignment will require you to include a certain number of these error commit messages.
 
 # Assignment Submission and Grading
 
