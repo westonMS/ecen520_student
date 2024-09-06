@@ -83,6 +83,8 @@ Create your top-level design as follows:
   * Add a flip-flop on the TX output of your transmitter module and send the output to the top-level TX output. This flip-flop will make sure that the output signal does not glitch. 
 -->
 
+Note that you must follow the [Level 2](../resources/coding_standard.md#level_2) coding standards for your Verilog files.
+
 A top-level testbench, [top_tb.sv](./top_tb.sv), has been created for you to test your top-level design.
 This testbench also uses the [rx_model.sv](../tx_sim/rx_model.sv) simulation model from the previous assignment.
 Make sure your top-level design successfully passes this testbench.
