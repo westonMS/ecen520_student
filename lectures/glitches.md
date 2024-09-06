@@ -11,8 +11,8 @@ In this lecture, we will discuss how glitches can occur in finite state machines
     * 10.8: These are examples you can browse through but it is VHDL so you can probably ignore it.
 
 ## Key Concepts
+  * Source of output glitches in FSMs (transitioning between states and OFL logic glitches)
   * FSM Encoding approaches
-  * The difference between "Moore" and "Mealy" outputs
   * Moore output buffering and inability to implement Mealy output buffering
   * FSM Output glitches
 
