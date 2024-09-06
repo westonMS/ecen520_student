@@ -1,11 +1,11 @@
-# ECEN 620 Coding Standard
+# ECEN 520 Coding Standard
 
 Like software, coding your RTL with an appropriate style will make it easier for you to maintain your code, for others to understand your code, and for grading of your code.
 You will be required to follow these standards for all assignments submitted for this class. 
 This page summarizes the coding requirements for all HDL code generated for this class.
 The coding standard is progressive meaning that additional levels of coding standard will be required as we progress through the class.
 Each assignment will indicate which level of the coding standard is required.
-These standards are based loosely on the [ECEN 220](https://ecen220wiki.groups.et.byu.net/03-coding-standard/) coding standards but are adapted for this class.
+These standards are based loosely on the [ECEN 320](https://ecen220wiki.groups.et.byu.net/03-coding-standard/) coding standards but are adapted for this class.
 
 ## Level 1
 
