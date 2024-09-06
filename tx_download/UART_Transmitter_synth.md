@@ -36,9 +36,11 @@ Create a module named `debouncer` with the following top-level ports and paramet
 | rst | Input | 1 | Synchronous reset |
 | async_in | Input | 1 | Asynchronous input signal to be debounced |
 | debounce_out | Output | 1 | Debounced output signal |
+
 | Parameter Name | Type | Default | Purpose |
 | ---- | ---- | ---- | ---- |
 | DEBOUNCE_CLKS | integer | 1_000| Number of clocks for debounce delay |
+
 There is a [lab description](https://byu-cpe.github.io/ecen320/labs/lab-08/) of a debouncer that you can use as a reference.
 Your debouncer will need to have a parameter that specifies the number of clocks needed for the debounce delay.
 This way you can simulate your debouncer with relatively short debounce times but synthesize your debouncer with a longer debounce time.
@@ -65,6 +67,7 @@ Create a top-level module named `tx_top` with the following ports and parameters
 | LED | Output | 8 | Board LEDs (used for data) |
 | UART_RXD_OUT | Output | 1 | Transmitter output signal |
 | LED16_B | Output | 1 | Used for TX busy signal |
+
 | Parameter Name | Type | Default | Purpose |
 | ---- | ---- | ---- | ----  |
 | CLK_FREQUENCY  | 100_000_000 | Specify the clock frequency |
