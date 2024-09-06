@@ -67,7 +67,7 @@ Create your transmitter with the following ports and parameters (you must name t
 | send | Input | 1 | Control signal to start a transmit operation |
 | din | Input | 8 | 8 data bits to send |
 | busy | Output | 1 | Indicates that the transmitter is in the middle of a transmission |
-| dout | Output | 1 | Transmitter output signal |
+| tx_out | Output | 1 | Transmitter output signal |
 
 | Parameter Name | Type | Default | Purpose |
 | ---- | ---- | ---- | ---- |
@@ -132,8 +132,8 @@ The following makefile rule demonstrates how to elaborate the simulation model w
 
 ```
 sim_tx_115200_even: tx.sv
-    xvlog -sv tx.sv tx_tb.sv rx_model.sv
-    vsim -c work.tx_tb -gBAUD_RATE=115200 -gPARITY=0 -do "run -all"
+    vlog -sv tx.sv tx_tb.sv rx_model.sv
+    vsim -c work.tx_tb -gBAUD_RATE=115200 -gPARITY=0 -do "run -all; quit"
 ```
 
 After your module passes both testbenches you are ready to submit your assignment.
