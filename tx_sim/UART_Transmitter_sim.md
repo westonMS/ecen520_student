@@ -120,8 +120,10 @@ Here is a sample makefile rule that will run the testbench simulation from the c
 ```
 sim_tx: tx.sv
     vlog tx.sv tx_tb.sv rx_model.sv
-    vsim -c work.tx_tb -do "run -all"
+    vsim -c work.tx_tb -do "run -all; quit"
 ```
+**Note** the use of the `quit` command in the `vsim` command.
+This is necessary to exit the simulation after the simulation is complete so you can go on to the next makefile rule.
 
 You will need to verify that your transmitter works correctly with multiple baud rates and clock frequencies.
 Further, you need to verify that your transmitter works with both even and odd parity.

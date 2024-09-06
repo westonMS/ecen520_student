@@ -12,7 +12,7 @@ This repository contains the lecture schedule (including links to lecture summar
 | 9/4/2024 | [Class Overview](./lectures/class_overview.md) |
 | 9/6/2024 | [SystemVerilog Review](./lectures/system_verilog_overview.md) |
 | **Week 2** | |
-| 9/9/2024 | [SystemVerilog Sequential Logic Design](./lectures/system_verilog_sequential.md) |
+| 9/9/2024 | [Behavioral SystemVerilog](./lectures/system_verilog_sequential.md) |
 | 9/11/2024 | [FSM Design](./lectures/fsm_design.md) |
 | 9/13/2024 | [FSM Glitches](./lectures/glitches.md) |
 | **Week 3** | |
