@@ -208,7 +208,7 @@ These sequences are as follows:
 ## ADXL362 Testbench
 
 Create a testbench of your controller that tests the operation of your AXDL362L controller.
-This testbench should be designed as follows:
+This testbench should be designed as follows:+
 * Make the top-level testbench parameterizable with the two top-level parameters.
 * Create a free-running clock
 * Instance your top-level design
@@ -227,12 +227,13 @@ This testbench should be designed as follows:
 Make sure your design successfully passes this testbench.
 Add the makefile rules named `sim_adxl362` and `sim_adxl362_100` that will perform this simulation from the command line (the `sim_adxl362_100` rule should be used to set the `SCLK_FREQUENCY` parameter to 100_000).
 
+<!--
 ## Preliminary Synthesis
 
 Although we will not be downloading this design in this assignment, it is important to perform a preliminary synthesis step on these modules to identify any synthesis problems.
-Create a makefile rule named `synth_adxl362_cntrl` that performs "out of context" synthesis on this module (see the [instrucitons](../rx_sim/UART_Receiver_sim.md#receiver-synthesis) on how to do this).
+Create a makefile rule named `synth_adxl362_cntrl` that performs "out of context" synthesis on this module (see the [instructions](../rx_sim/UART_Receiver_sim.md#receiver-synthesis) on how to do this).
 Make sure all synthesis warnings and errors are resolved before submitting your assignment.
-
+-->
                                       
 **Resources:**
   * [Nexys DDR user guide](https://digilent.com/reference/_media/reference/programmable-logic/nexys-4-ddr/nexys4ddr_rm.pdf)
@@ -247,4 +248,6 @@ Make sure all synthesis warnings and errors are resolved before submitting your 
     * `sim_spi_cntrl_100`
     * `synth_spi_cntrl`
     * `sim_adxl362`
+<!--
     * `synth_adxl362_cntrl`
+-->
