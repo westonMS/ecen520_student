@@ -32,19 +32,19 @@ This repository contains the lecture schedule (including links to lecture summar
 | 10/9/2024 | [Timing overview and review]() |
 | 10/11/2024 | [Clock jitter, duty cycle, clock skew]() |
 | **Week 7** | |
-| 10/14/2024 | [Clock Skew Analylsis]() |
-| 10/16/2024 | [Xilinx Clock Skew Timing reports]() |
-| 10/18/2024 | [Pipelining and Retiming]() |
+| 10/14/2024 | [Clock Skew Analysis]() |
+| 10/16/2024 | [MMCMs and FPGA clocks]() |
+| 10/18/2024 | [Xilinx Clock Skew Timing reports]() |
 | **Week 8** | |
 | 10/21/2024 | [Reset timing and strategies]() |
 | 10/23/2024 | [Poor Sequential Design Practice]() |
-| 10/25/2024 | [Metastability & Syncrhonizer design]() |
+| 10/25/2024 | [Metastability & Synchronizer design]() |
 | **Week 9** | |
 | 10/28/2024 | [Clock domain crossing]() |
 | 10/30/2024 | [Handshaking]() |
 | 11/1/2024 | [Data transfer across clock domains]() |
-| **Week 10** | |
-| 11/4/2024 | [MMCMs and FPGA clocks]() |
+| **Week 10** | [Pipelining and Retiming]() |
+| 11/4/2024 |  |
 | 11/6/2024 | []() |
 | 11/8/2024 | []() |
 | **Week 11** | |
@@ -54,9 +54,9 @@ This repository contains the lecture schedule (including links to lecture summar
 | **Week 12** | |
 | 11/18/2024 |  |
 | 11/20/2024 | []() |
-| 11/22/2024 | []() |
+| 11/22/2024 | * |
 | **Week 13** | |
-| 11/25/2024 |  |
+| 11/25/2024 | * |
 | 11/27/2024 | No Class |
 | 11/29/2024 | No Class |
 | **Week 14** | |
