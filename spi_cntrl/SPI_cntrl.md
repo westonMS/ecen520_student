@@ -1,20 +1,6 @@
 # SPI
  
-<!--
--- SPI Controller Part 1 (controller, use model, create testbench, synthesize to find synthesis errors)
 
-- Come up with some "discussion" or exploration exercise as part of the readme.md
-- It is hard to follow their testbenches. Need to provide more constraints so that I can follow and see that what was recieved is what was sent
-  (prehaps have them provide such a statement in the testbench output)
-- Perhaps I provide a detailed module test bench and they create the top-level testbench
-  (trade off between learning testenches and testing their circuits properly)
-Studnets confused on specification. More detailed steps?
-20+ hours!
-  - Have them display busy on one of the tri-color LEDs (like uart)
-  - Have them describe the state machine encoding from the synthesis report
-  - Have them put synchronizers on the reset signal
-  * Provide ability to continuously update the registers so you can see it change when tilting the board  
--->
 In this assignment, you will create a [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface) controller for communicating with a SPI device.
 
 The SPI protocol is used extensively in embedded systems as a way to control external devices using a simple serial protocol. 
@@ -246,8 +232,19 @@ Make sure all synthesis warnings and errors are resolved before submitting your 
 1. Required Makefile rules:
     * `sim_spi_cntrl`
     * `sim_spi_cntrl_100`
-    * `synth_spi_cntrl`
     * `sim_adxl362`
 <!--
+    * `synth_spi_cntrl`
     * `synth_adxl362_cntrl`
+-->
+
+
+<!--
+-- SPI Controller Part 1 (controller, use model, create testbench, synthesize to find synthesis errors)
+
+- Come up with some "discussion" or exploration exercise as part of the readme.md
+- It is hard to follow their testbenches. Need to provide more constraints so that I can follow and see that what was recieved is what was sent
+  (prehaps have them provide such a statement in the testbench output)
+- Perhaps I provide a detailed module test bench and they create the top-level testbench
+  (trade off between learning testenches and testing their circuits properly)
 -->
